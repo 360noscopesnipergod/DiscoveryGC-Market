@@ -1,6 +1,1 @@
-GitHub Pages build
 
-Upload index.html, .nojekyll, and README.md to your GitHub repository.
-
-For the intended deployment, test the site through the GitHub Pages URL.
-Opening index.html directly with file:// may behave differently because of browser CORS rules.
