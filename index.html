@@ -1,0 +1,2544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DiscoveryGC Markets</title>
+  <style>
+    :root {
+      --bg: #0d1020;
+      --panel: #171a30;
+      --panel-2: #202544;
+      --border: #353b69;
+      --text: #eef2ff;
+      --muted: #a8b0d6;
+      --accent: #8a7dff;
+      --accent-2: #5ad7ff;
+      --good: #62d89f;
+      --warn: #ffca67;
+      --bad: #ff6b7a;
+      --shadow: 0 20px 50px rgba(0,0,0,.28);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top right, rgba(90, 215, 255, .09), transparent 32%),
+        radial-gradient(circle at bottom left, rgba(138, 125, 255, .12), transparent 35%),
+        var(--bg);
+      color: var(--text);
+    }
+
+    button, input, select {
+      font: inherit;
+    }
+
+    .app {
+      display: grid;
+      grid-template-columns: 250px 1fr;
+      min-height: 100vh;
+    }
+
+    aside {
+      border-right: 1px solid var(--border);
+      background: rgba(13, 16, 32, .82);
+      backdrop-filter: blur(16px);
+      padding: 24px 18px;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+    }
+
+    .brand {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 28px;
+    }
+
+    .brand-mark {
+      width: 42px;
+      height: 42px;
+      border-radius: 13px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: #0d1020;
+      font-weight: 900;
+      box-shadow: 0 8px 24px rgba(90, 215, 255, .2);
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: 1rem;
+    }
+
+    .brand p {
+      margin: 2px 0 0;
+      font-size: .78rem;
+      color: var(--muted);
+    }
+
+    .nav-btn {
+      width: 100%;
+      padding: 12px 14px;
+      margin: 5px 0;
+      border: 1px solid transparent;
+      border-radius: 12px;
+      background: transparent;
+      color: var(--muted);
+      text-align: left;
+      cursor: pointer;
+      transition: .18s ease;
+    }
+
+    .nav-btn:hover, .nav-btn.active {
+      color: var(--text);
+      background: rgba(138, 125, 255, .12);
+      border-color: rgba(138, 125, 255, .3);
+    }
+
+    main {
+      padding: 32px;
+      max-width: 1450px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 20px;
+      margin-bottom: 24px;
+    }
+
+    .topbar h2 {
+      font-size: clamp(1.6rem, 2vw, 2.25rem);
+      margin: 0 0 8px;
+    }
+
+    .topbar p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .clock {
+      padding: 12px 16px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: rgba(23, 26, 48, .8);
+      color: var(--accent-2);
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+
+    .section { display: none; }
+    .section.active { display: block; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 18px;
+    }
+
+    .card {
+      background: linear-gradient(180deg, rgba(32,37,68,.95), rgba(23,26,48,.96));
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 20px;
+      box-shadow: var(--shadow);
+    }
+
+    .card h3 {
+      margin: 0 0 6px;
+      font-size: 1.05rem;
+    }
+
+    .card .sub {
+      color: var(--muted);
+      font-size: .9rem;
+      margin-bottom: 18px;
+    }
+
+    .span-4 { grid-column: span 4; }
+    .span-5 { grid-column: span 5; }
+    .span-6 { grid-column: span 6; }
+    .span-7 { grid-column: span 7; }
+    .span-8 { grid-column: span 8; }
+    .span-12 { grid-column: span 12; }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .field.full { grid-column: 1 / -1; }
+
+    label {
+      font-size: .82rem;
+      color: var(--muted);
+    }
+
+    input, select {
+      width: 100%;
+      border: 1px solid var(--border);
+      background: rgba(13, 16, 32, .78);
+      color: var(--text);
+      padding: 11px 12px;
+      border-radius: 11px;
+      outline: none;
+    }
+
+    input:focus, select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(138, 125, 255, .12);
+    }
+
+    .command-box {
+      margin-top: 18px;
+      padding: 15px;
+      background: #0a0d1a;
+      border: 1px solid #2a3055;
+      border-radius: 13px;
+      font-family: "SFMono-Regular", Consolas, monospace;
+      color: #b7f1ff;
+      word-break: break-word;
+      min-height: 54px;
+      display: flex;
+      align-items: center;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 12px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      border: 1px solid var(--border);
+      color: var(--text);
+      background: var(--panel-2);
+      padding: 10px 14px;
+      border-radius: 11px;
+      cursor: pointer;
+    }
+
+    .btn.primary {
+      background: linear-gradient(135deg, var(--accent), #6d63db);
+      border-color: transparent;
+    }
+
+    .btn.secondary {
+      background: rgba(90, 215, 255, .1);
+      color: var(--accent-2);
+      border-color: rgba(90, 215, 255, .24);
+    }
+
+    .btn.danger {
+      background: rgba(255, 107, 122, .1);
+      color: var(--bad);
+      border-color: rgba(255, 107, 122, .28);
+    }
+
+    .status-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0,1fr));
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .metric {
+      padding: 14px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: rgba(13, 16, 32, .48);
+    }
+
+    .metric span {
+      display: block;
+      color: var(--muted);
+      font-size: .78rem;
+      margin-bottom: 5px;
+    }
+
+    .metric strong {
+      font-size: 1.02rem;
+    }
+
+    .supply-row {
+      display: grid;
+      grid-template-columns: 1.35fr .9fr .9fr 1fr 1.2fr auto;
+      gap: 10px;
+      align-items: end;
+      padding: 13px 0;
+      border-top: 1px solid rgba(53,59,105,.65);
+    }
+
+    .supply-row:first-child { border-top: 0; }
+
+    .supply-result {
+      min-width: 0;
+      font-size: .88rem;
+    }
+
+    .supply-result b {
+      display: block;
+      margin-bottom: 3px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 5px 8px;
+      border-radius: 999px;
+      font-size: .75rem;
+      border: 1px solid currentColor;
+    }
+
+    .healthy { color: var(--good); }
+    .low { color: var(--warn); }
+    .critical { color: var(--bad); }
+
+    .notice {
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 202, 103, .3);
+      background: rgba(255, 202, 103, .08);
+      color: #ffe2a8;
+      font-size: .87rem;
+      margin-bottom: 16px;
+    }
+
+    .history-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-height: 430px;
+      overflow: auto;
+    }
+
+    .history-item {
+      padding: 11px 12px;
+      background: rgba(13,16,32,.6);
+      border: 1px solid var(--border);
+      border-radius: 11px;
+      font-family: Consolas, monospace;
+      font-size: .84rem;
+      cursor: pointer;
+    }
+
+    .muted { color: var(--muted); }
+    .small { font-size: .8rem; }
+
+
+    .combo { position: relative; }
+    .combo-menu { position:absolute; z-index:50; left:0; right:0; top:calc(100% + 6px); max-height:280px; overflow-y:auto; border:1px solid var(--border); border-radius:12px; background:#11152a; box-shadow:var(--shadow); padding:6px; display:none; }
+    .combo.open .combo-menu { display:block; }
+    .combo-option { width:100%; border:0; background:transparent; color:var(--text); text-align:left; padding:9px 10px; border-radius:9px; cursor:pointer; }
+    .combo-option:hover, .combo-option.active { background:rgba(138,125,255,.16); }
+    .combo-empty { padding:10px; color:var(--muted); font-size:.86rem; }
+    .entry-hint { margin-top:5px; color:var(--muted); font-size:.76rem; }
+
+    @media (max-width: 980px) {
+      .app { grid-template-columns: 1fr; }
+      aside {
+        position: static;
+        height: auto;
+        border-right: 0;
+        border-bottom: 1px solid var(--border);
+      }
+      .nav-wrap {
+        display: flex;
+        overflow-x: auto;
+        gap: 8px;
+      }
+      .nav-btn {
+        width: auto;
+        white-space: nowrap;
+      }
+      main { padding: 20px; }
+      .span-4, .span-5, .span-6, .span-7, .span-8, .span-12 {
+        grid-column: 1 / -1;
+      }
+      .status-grid { grid-template-columns: repeat(2, 1fr); }
+      .supply-row { grid-template-columns: 1fr 1fr; }
+      .supply-result { grid-column: 1 / -1; }
+    }
+
+    @media (max-width: 600px) {
+      .form-grid, .status-grid { grid-template-columns: 1fr; }
+      .topbar { flex-direction: column; }
+      .clock { width: 100%; }
+    }
+  
+    @media (max-width: 980px) {
+      #commodityMarket .card,
+      #goodsMarket .card {
+        grid-column: 1 / -1 !important;
+        grid-row: auto !important;
+      }
+
+      #topCommodityMarkets,
+      #topGoodsMarkets {
+        max-height: 420px !important;
+      }
+    }
+
+  
+    /* Standalone Markets package */
+    .nav-btn:not([data-target="commodityMarket"]):not([data-target="goodsMarket"]) {
+      display: none !important;
+    }
+
+    section.section:not(#commodityMarket):not(#goodsMarket) {
+      display: none !important;
+    }
+
+    #commodityMarket.section.active,
+    #goodsMarket.section.active {
+      display: block !important;
+    }
+
+  </style>
+</head>
+<body>
+<div class="app">
+  <aside>
+    <div class="brand">
+      <div class="brand-mark">DG</div>
+      <div>
+        <h1>DiscoveryGC Markets</h1>
+        <p>Commodity & goods market dashboard</p>
+      </div>
+    </div>
+
+    <div class="nav-wrap">
+      <button class="nav-btn" data-target="access">Access</button>
+      <button class="nav-btn" data-target="base">Base Commands</button>
+      <button class="nav-btn" data-target="bank">Bank</button>
+      <button class="nav-btn" data-target="shop">Shop</button>
+      <button class="nav-btn" data-target="upkeep">Upkeep Tracker</button>
+      <button class="nav-btn active" data-target="commodityMarket">Commodity Market</button>
+      <button class="nav-btn" data-target="goodsMarket">Goods Market</button>
+      <button class="nav-btn" data-target="liveData">Live API Data</button>
+      <button class="nav-btn" data-target="history">Command History</button>
+    </div>
+  </aside>
+
+  <main>
+    <div class="topbar">
+      <div>
+        <h2>DiscoveryGC Market Console</h2>
+        <p>Live commodity and goods market analysis powered by Darkstat.</p>
+      </div>
+      <div class="clock" style="display:flex;flex-direction:column;gap:6px;min-width:245px;">
+        <div id="liveClock">Loading local time…</div>
+        <div id="utcClock" class="small muted">Loading UTC…</div>
+        <div class="actions" style="margin-top:4px;gap:6px;">
+          <button class="btn secondary" type="button" onclick="shiftClockIndex(-1)" style="padding:6px 10px;">−1h</button>
+          <button class="btn secondary" type="button" onclick="resetClockIndex()" style="padding:6px 10px;">Now</button>
+          <button class="btn secondary" type="button" onclick="shiftClockIndex(1)" style="padding:6px 10px;">+1h</button>
+        </div>
+        <div id="clockOffsetLabel" class="small muted">Offset: now</div>
+      </div>
+    </div>
+
+    <section id="access" class="section">
+      <div class="grid">
+        <div class="card span-7">
+          <h3>Access Command</h3>
+          <div class="sub">Add or remove access for a name, faction, or tag.</div>
+
+          <div class="form-grid">
+            <div class="field">
+              <label for="accessAction">Action</label>
+              <select id="accessAction">
+                <option value="add">Add</option>
+                <option value="remove">Remove</option>
+                <option value="list">List Entries</option>
+              </select>
+            </div>
+
+            <div class="field" id="accessTargetWrap">
+              <label for="accessTarget">Target type</label>
+              <select id="accessTarget">
+                <option value="name">Name</option>
+                <option value="faction">Faction</option>
+                <option value="tag">Tag</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="accessList">Access list</label>
+              <select id="accessList">
+                <option value="whitelist">Whitelist</option>
+                <option value="blacklist">Blacklist</option>
+                <option value="hostile">Hostile</option>
+                <option value="nodock">No Dock</option>
+                <option value="srp">SRP</option>
+              </select>
+            </div>
+
+            <div class="field" id="accessEntryWrap">
+              <label for="accessEntry" id="accessEntryLabel">Player Name</label>
+              <div class="combo" id="accessEntryCombo">
+                <input id="accessEntry" value="kishiro" autocomplete="off" placeholder="e.g. kishiro or WannabePirate03" />
+                <div class="combo-menu" id="accessEntryMenu"></div>
+              </div>
+              <div class="entry-hint" id="accessEntryHint">Free-text entry.</div>
+            </div>
+          </div>
+
+          <div class="command-box" id="accessCommand"></div>
+          <div class="actions">
+            <button class="btn primary" onclick="copyCommand('accessCommand')">Copy Command</button>
+            <button class="btn secondary" onclick="saveCommand('accessCommand')">Save to History</button>
+          </div>
+        </div>
+
+        <div class="card span-5">
+          <h3>Examples</h3>
+          <div class="sub">Click an example to load it.</div>
+          <div class="history-list">
+            <div class="history-item" onclick="loadAccess('add','faction','whitelist','kishiro')">/access add faction whitelist kishiro</div>
+            <div class="history-item" onclick="loadAccess('add','name','blacklist','WannabePirate03')">/access add name blacklist WannabePirate03</div>
+            <div class="history-item" onclick="loadAccess('remove','faction','whitelist','kishiro')">/access remove faction whitelist kishiro</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="base" class="section">
+      <div class="grid">
+        <div class="card span-8">
+          <h3>Base Command Builder</h3>
+          <div class="sub">First draft covering commands visible in your screenshots.</div>
+
+          <div class="form-grid">
+            <div class="field full">
+              <label for="baseCommandSelect">Command</label>
+              <select id="baseCommandSelect"></select>
+            </div>
+            <div id="baseDynamicFields" class="field full"></div>
+          </div>
+
+          <div class="command-box" id="baseCommand"></div>
+          <div class="actions">
+            <button class="btn primary" onclick="copyCommand('baseCommand')">Copy Command</button>
+            <button class="btn secondary" onclick="saveCommand('baseCommand')">Save to History</button>
+          </div>
+        </div>
+
+        <div class="card span-4">
+          <h3>Description</h3>
+          <div id="baseDescription" class="muted">Select a command to view details.</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="bank" class="section">
+      <div class="grid">
+        <div class="card span-7">
+          <h3>Bank Command</h3>
+          <div class="sub">Withdraw, deposit, or check current bank status.</div>
+
+          <div class="form-grid">
+            <div class="field">
+              <label for="bankAction">Action</label>
+              <select id="bankAction">
+                <option value="withdraw">Withdraw</option>
+                <option value="deposit">Deposit</option>
+                <option value="status">Status</option>
+              </select>
+            </div>
+            <div class="field" id="bankCreditsWrap">
+              <label for="bankCredits">Credits</label>
+              <input id="bankCredits" type="number" min="0" value="100000" />
+            </div>
+          </div>
+
+          <div class="command-box" id="bankCommand"></div>
+          <div class="actions">
+            <button class="btn primary" onclick="copyCommand('bankCommand')">Copy Command</button>
+            <button class="btn secondary" onclick="saveCommand('bankCommand')">Save to History</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="shop" class="section">
+      <div class="grid">
+        <div class="card span-8">
+          <h3>Shop Command Builder</h3>
+          <div class="sub">Pricing, stock limits, pinning, visibility, and cargo setup.</div>
+
+          <div class="form-grid">
+            <div class="field full">
+              <label for="shopAction">Shop action</label>
+              <select id="shopAction">
+                <option value="price">Set Price</option>
+                <option value="stock">Set Stock Limits</option>
+                <option value="remove">Remove Item</option>
+                <option value="pin">Pin Item</option>
+                <option value="unpin">Unpin Item</option>
+                <option value="public">Make Public</option>
+                <option value="private">Make Private</option>
+                <option value="addcargo">Add Cargo</option>
+                <option value="page">View Stock Page</option>
+              </select>
+            </div>
+            <div id="shopDynamicFields" class="field full"></div>
+          </div>
+
+          <div class="command-box" id="shopCommand"></div>
+          <div class="actions">
+            <button class="btn primary" onclick="copyCommand('shopCommand')">Copy Command</button>
+            <button class="btn secondary" onclick="saveCommand('shopCommand')">Save to History</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="upkeep" class="section">
+      <div class="grid">
+        <div class="card span-12">
+          <h3>Upkeep Tracker</h3>
+          <div class="sub">Enter current amounts and verified daily consumption rates. The tracker estimates the depletion time using your computer's local clock.</div>
+
+          <div class="notice">
+            Consumption rates are editable because the exact website upkeep table has not yet been verified from screenshots. Enter the official daily rates when you provide them.
+          </div>
+
+          <div class="status-grid">
+            <div class="metric"><span>Tracking started</span><strong id="trackingStarted">Not saved</strong></div>
+            <div class="metric"><span>First resource out</span><strong id="firstOut">—</strong></div>
+            <div class="metric"><span>Time remaining</span><strong id="firstOutCountdown">—</strong></div>
+            <div class="metric"><span>Warning threshold</span><strong><span id="thresholdReadout">3</span> days</strong></div>
+          </div>
+
+          <div class="form-grid" style="margin-bottom:16px;">
+            <div class="field">
+              <label for="warningThreshold">Low-supply warning threshold (days)</label>
+              <input id="warningThreshold" type="number" min="0" step="0.5" value="3" />
+            </div>
+            <div class="field">
+              <label for="criticalThreshold">Critical threshold (days)</label>
+              <input id="criticalThreshold" type="number" min="0" step="0.25" value="1" />
+            </div>
+          </div>
+
+          <div id="supplyRows"></div>
+
+          <div class="actions">
+            <button class="btn primary" onclick="saveUpkeepSnapshot()">Update Supplies & Timestamp</button>
+            <button class="btn secondary" onclick="addSupplyRow()">Add Supply Type</button>
+            <button class="btn danger" onclick="resetUpkeep()">Reset Tracker</button>
+          </div>
+
+          <p class="small muted" style="margin-top:14px;">
+            The saved timestamp and supply values are stored only in this browser using localStorage.
+          </p>
+        </div>
+      </div>
+    </section>
+
+
+    <section id="commodityMarket" class="section active">
+      <div class="grid">
+        <div class="card" style="grid-column:1 / span 4; grid-row:1 / span 2; align-self:start;">
+          <h3>Global Commodity Market <span id="globalCommodityMarketValue" class="small muted" style="font-weight:500;margin-left:8px;"></span></h3>
+          
+          <div id="topCommodityMarkets" class="history-list" style="max-height:680px;">
+            <div class="muted">Refresh Market Data to calculate rankings.</div>
+          </div>
+        </div>
+
+        <div class="card" style="grid-column:5 / span 8;">
+          <h3>Commodity Producers & Consumers</h3>
+
+          <div class="form-grid">
+            <div class="field">
+              <label for="marketCommodity">Commodity</label>
+              <input id="marketCommodity"
+                     list="commodityMarketSuggestions"
+                     autocomplete="off"
+                     placeholder="Search by commodity name or nickname" />
+              <datalist id="commodityMarketSuggestions"></datalist>
+            </div>
+
+            <div class="field">
+              <label>Base Types</label>
+              <label style="display:flex;align-items:center;gap:10px;min-height:42px;cursor:pointer;">
+                <input id="includeNpcBases" type="checkbox" style="width:auto;" />
+                Include NPC bases and harvest sites
+              </label>
+            </div>
+
+            <div class="field">
+              <label>API Data</label>
+              <div class="actions" style="margin-top:0;">
+                <button class="btn secondary" id="refreshMarketDataButton" onclick="refreshCommodityMarketData()">Refresh Market Data</button>
+              </div>
+            </div>
+
+            <div class="field">
+              <label>&nbsp;</label>
+              <button class="btn primary" id="marketLookupButton" onclick="lookupCommodityMarket()">
+                Find Producers & Consumers
+              </button>
+            </div>
+          </div>
+
+          <div id="marketCommodityInfo" class="notice" style="margin-top:16px;">
+            Refresh Commodities under Live API Data first, then choose a commodity here.
+          </div>
+        </div>
+
+        <div class="card" style="grid-column:5 / span 4;">
+          <h3>Global Producer <span id="commodityProducerTotalTitle" class="small muted" style="font-weight:500;margin-left:8px;"></span></h3>
+          
+          <div id="commodityProducerCount" class="small muted" style="margin-bottom:10px;">0 results</div>
+          <div id="commodityProducers" class="history-list">
+            <div class="muted">No commodity selected.</div>
+          </div>
+        </div>
+
+        <div class="card" style="grid-column:9 / span 4;">
+          <h3>Global Consumer <span id="commodityConsumerTotalTitle" class="small muted" style="font-weight:500;margin-left:8px;"></span></h3>
+          
+          <div id="commodityConsumerCount" class="small muted" style="margin-bottom:10px;">0 results</div>
+          <div id="commodityConsumers" class="history-list">
+            <div class="muted">No commodity selected.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="goodsMarket" class="section">
+      <div class="grid">
+        <div class="card" style="grid-column:1 / span 4; grid-row:1 / span 2; align-self:start;">
+          <h3>Global Goods Market <span id="globalGoodsMarketValue" class="small muted" style="font-weight:500;margin-left:8px;"></span></h3>
+          
+          <div id="topGoodsMarkets" class="history-list" style="max-height:680px;">
+            <div class="muted">Refresh Market Data to calculate rankings.</div>
+          </div>
+        </div>
+
+        <div class="card" style="grid-column:5 / span 8;">
+          <h3>Goods Producers & Consumers</h3>
+
+          <div class="form-grid">
+            <div class="field">
+              <label for="marketGood">PoB Good</label>
+              <input id="marketGood"
+                     list="goodsMarketSuggestions"
+                     autocomplete="off"
+                     placeholder="Search by good name or nickname" />
+              <datalist id="goodsMarketSuggestions"></datalist>
+            </div>
+
+            <div class="field">
+              <label>Base Types</label>
+              <div class="entry-hint" style="padding-top:12px;">Player-owned bases only</div>
+            </div>
+
+            <div class="field">
+              <label>API Data</label>
+              <div class="actions" style="margin-top:0;">
+                <button class="btn secondary" id="refreshGoodsMarketDataButton" onclick="refreshGoodsMarketData()">Refresh Market Data</button>
+              </div>
+            </div>
+
+            <div class="field">
+              <label>&nbsp;</label>
+              <button class="btn primary" id="goodsLookupButton" onclick="lookupGoodsMarket()">
+                Find Producers & Consumers
+              </button>
+            </div>
+          </div>
+
+          <div id="marketGoodsInfo" class="notice" style="margin-top:16px;">
+            Refresh Goods Market Data, then choose a PoB good here.
+          </div>
+        </div>
+
+        <div class="card" style="grid-column:5 / span 4;">
+          <h3>Global Producer <span id="goodsProducerTotalTitle" class="small muted" style="font-weight:500;margin-left:8px;"></span></h3>
+          
+          <div id="goodsProducerCount" class="small muted" style="margin-bottom:10px;">0 results</div>
+          <div id="goodsProducers" class="history-list">
+            <div class="muted">No good selected.</div>
+          </div>
+        </div>
+
+        <div class="card" style="grid-column:9 / span 4;">
+          <h3>Global Consumer <span id="goodsConsumerTotalTitle" class="small muted" style="font-weight:500;margin-left:8px;"></span></h3>
+          
+          <div id="goodsConsumerCount" class="small muted" style="margin-bottom:10px;">0 results</div>
+          <div id="goodsConsumers" class="history-list">
+            <div class="muted">No good selected.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="liveData" class="section">
+      <div class="grid">
+        <div class="card span-12">
+          <h3>Darkstat API Connection</h3>
+          <div class="sub">Load current DiscoveryGC factions, commodities, systems, and public player-owned bases.</div>
+          <div class="status-grid">
+            <div class="metric"><span>Connection</span><strong id="apiConnection">Not tested</strong></div>
+            <div class="metric"><span>Factions</span><strong id="apiFactionCount">Fallback list</strong></div>
+            <div class="metric"><span>Commodities</span><strong id="apiCommodityCount">Not loaded</strong></div>
+            <div class="metric"><span>Public PoBs</span><strong id="apiPobCount">Not loaded</strong></div>
+          </div>
+          <div class="actions">
+            <button class="btn primary" onclick="loadFactionData()">Refresh Factions</button>
+            <button class="btn primary" onclick="loadCommodityData()">Refresh Commodities</button>
+            <button class="btn primary" onclick="loadSystemData()">Refresh Systems</button>
+            <button class="btn primary" onclick="loadPobData()">Refresh Public PoBs</button>
+            <button class="btn secondary" onclick="testApiConnection()">Test Connection</button>
+            <button class="btn danger" onclick="clearApiCache()">Clear API Cache</button>
+          </div>
+          <div class="notice" id="apiNotice" style="margin-top:16px;">Each dataset is refreshed independently. Use only the data you need; built-in faction suggestions remain available as a fallback.</div>
+        </div>
+        <div class="card span-6">
+          <h3>Public Player-Owned Bases</h3>
+          <div class="sub">Search the public PoB data returned by Darkstat.</div>
+          <div class="field"><label for="pobSearch">Search by base, faction, system, or region</label><input id="pobSearch" placeholder="Start typing…" oninput="renderPobs()" /></div>
+          <div id="pobList" class="history-list" style="margin-top:14px;"></div>
+        </div>
+        <div class="card span-6">
+          <h3>API Data Summary</h3>
+          <div class="sub">The command generator remains read-only. API data is used only for suggestions and display.</div>
+          <div id="apiSummary" class="history-list"><div class="muted">Refresh live data to populate this section.</div></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="history" class="section">
+      <div class="grid">
+        <div class="card span-8">
+          <h3>Command History</h3>
+          <div class="sub">Commands saved in this browser. Click one to copy it.</div>
+          <div id="historyList" class="history-list"></div>
+          <div class="actions">
+            <button class="btn danger" onclick="clearHistory()">Clear History</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+<datalist id="commoditySuggestions"></datalist>
+
+<script>
+  const $ = (id) => document.getElementById(id);
+
+  let clockIndexHours = 0;
+
+  function indexedClockTime() {
+    return new Date(Date.now() + (clockIndexHours * 60 * 60 * 1000));
+  }
+
+  function updateClock() {
+    const indexed = indexedClockTime();
+
+    $('liveClock').textContent = indexed.toLocaleString([], {
+      weekday: 'short',
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit'
+    });
+
+    $('utcClock').textContent = 'UTC ' + indexed.toLocaleString('en-GB', {
+      timeZone: 'UTC',
+      weekday: 'short',
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false
+    });
+
+    if ($('clockOffsetLabel')) {
+      $('clockOffsetLabel').textContent = clockIndexHours === 0
+        ? 'Offset: now'
+        : `Offset: ${clockIndexHours > 0 ? '+' : ''}${clockIndexHours}h`;
+    }
+  }
+
+  function shiftClockIndex(hours) {
+    clockIndexHours += Number(hours || 0);
+    updateClock();
+  }
+
+  function resetClockIndex() {
+    clockIndexHours = 0;
+    updateClock();
+  }
+
+  setInterval(updateClock, 1000);
+  updateClock();
+
+  document.querySelectorAll('.nav-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+      btn.classList.add('active');
+      $(btn.dataset.target).classList.add('active');
+    });
+  });
+
+  function clean(value) {
+    return String(value ?? '').trim().replace(/\s+/g, ' ');
+  }
+
+  async function copyCommand(id) {
+    const text = clean($(id).textContent);
+    if (!text) return;
+    await navigator.clipboard.writeText(text);
+    const original = $(id).textContent;
+    $(id).textContent = 'Copied: ' + text;
+    setTimeout(() => $(id).textContent = original, 900);
+  }
+
+  function getHistory() {
+    return JSON.parse(localStorage.getItem('dgcCommandHistory') || '[]');
+  }
+
+  function saveCommand(id) {
+    const command = clean($(id).textContent);
+    if (!command) return;
+    const history = getHistory();
+    history.unshift({ command, time: new Date().toISOString() });
+    localStorage.setItem('dgcCommandHistory', JSON.stringify(history));
+    renderHistory();
+  }
+
+  function renderHistory() {
+    const history = getHistory();
+    $('historyList').innerHTML = history.length
+      ? history.map(item => `
+          <div class="history-item" onclick="navigator.clipboard.writeText(${JSON.stringify(item.command)})">
+            ${escapeHtml(item.command)}
+            <div class="small muted" style="font-family:inherit;margin-top:5px;">
+              ${new Date(item.time).toLocaleString()}
+            </div>
+          </div>
+        `).join('')
+      : '<div class="muted">No saved commands yet.</div>';
+  }
+
+  function clearHistory() {
+    localStorage.removeItem('dgcCommandHistory');
+    renderHistory();
+  }
+
+  function escapeHtml(str) {
+    return String(str).replace(/[&<>"']/g, ch => ({
+      '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'
+    }[ch]));
+  }
+
+
+  let factions = ["Ageira Technologies", "ALG Waste Disposal", "Artificial Intelligence", "Blood Dragons", "Border World Exports", "Bounty Hunters Guild", "Bretonia Armed Forces", "Bretonia Intelligence Service", "Bretonia Mining & Manufacturing", "Bretonia Police", "Bristol Constructions and Manufacturing", "Bundschuh", "Caians", "Corsairs", "Crayter Republic", "Cryer Pharmaceuticals", "Daumann Heavy Construction", "Deep Space Engineering", "EFL Oil and Machinery", "Farmers Alliance", "Freelancers", "Gallic Brigands", "Gallic Gendarmerie", "Gallic Metal Service", "Gallic National Intelligence", "Gallic Navy", "Gallic Royalists", "Gas Miners Guild", "Gateway Shipping", "Golden Chrysanthemums", "Hogosha", "IDF Shipping", "Imperial Shipping", "Independent Miners Guild", "Independent Pirates", "Interspace Commerce", "Junkers", "Kishiro Technologies", "Kruger Minerals", "Kusari Naval Forces", "Kusari Office of Intelligence", "Kusari State Police", "Lane Hackers", "Liberty Navy", "Liberty Police, Inc.", "Liberty Rogues", "Liberty Security Force", "LWB", "Militants", "MND", "Mollys", "Nomads", "Orbital Spa & Cruise", "Outcasts", "Planetform, Inc.", "Red Hessians", "Rheinland Federal Police", "Rheinland Military", "Samurai Industries", "Sirius Coalition", "Synth Foods, Inc.", "The Core", "The Maquis", "The Order", "The Technocracy", "Unione Corse", "Unioners", "Universal Shipping", "Vagrants", "Wild", "Xenos", "Zoners"];
+  const API_BASE = 'https://darkstat.dd84ai.com';
+  let commodities = [], systems = [], publicPobs = [];
+  let pobGoodsCache = null;
+
+  async function apiPost(path, body = {}, timeoutMs = 20000) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), timeoutMs);
+    try {
+      const r = await fetch(API_BASE + path, {
+        method:'POST',
+        headers:{'Content-Type':'application/json','Accept':'application/json'},
+        body:JSON.stringify(body),
+        signal:controller.signal
+      });
+      if (!r.ok) throw new Error(`${r.status} ${r.statusText}`);
+      return await r.json();
+    } catch (error) {
+      if (error.name === 'AbortError') throw new Error(`Timed out after ${Math.round(timeoutMs/1000)} seconds`);
+      throw error;
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+
+  function namedItems(items) {
+    return Array.isArray(items) ? items.filter(x=>x&&(x.name||x.nickname)).map(x=>({name:clean(x.name||x.nickname),nickname:clean(x.nickname||x.name),raw:x})).sort((a,b)=>a.name.localeCompare(b.name)) : [];
+  }
+
+  function apiNotice(msg, bad=false) {
+    if (!$('apiNotice')) return;
+    $('apiNotice').textContent=msg;
+    $('apiNotice').style.borderColor=bad?'rgba(255,107,122,.4)':'rgba(98,216,159,.4)';
+  }
+
+  function updateApiUi(note='') {
+    if (!$('apiFactionCount')) return;
+    $('apiFactionCount').textContent=`${factions.length.toLocaleString()} loaded`;
+    $('apiCommodityCount').textContent=commodities.length?`${commodities.length.toLocaleString()} loaded`:'Not loaded';
+    $('apiPobCount').textContent=publicPobs.length?`${publicPobs.length.toLocaleString()} loaded`:'Not loaded';
+    $('apiSummary').innerHTML=`<div class="history-item">Faction suggestions: ${factions.length}</div><div class="history-item">Commodity suggestions: ${commodities.length}</div><div class="history-item">Systems: ${systems.length}</div><div class="history-item">Public PoBs: ${publicPobs.length}</div><div class="small muted">${escapeHtml(note)}</div>`;
+  }
+
+  function populateCommoditySuggestions() {
+    if (!$('commoditySuggestions')) return;
+    $('commoditySuggestions').innerHTML=commodities.map(x=>`<option value="${escapeHtml(x.nickname)}">${escapeHtml(x.name)}</option>`).join('');
+  }
+
+  async function testApiConnection() {
+    $('apiConnection').textContent='Testing…';
+    try { const r=await fetch(API_BASE+'/ping'); if(!r.ok) throw new Error(`${r.status} ${r.statusText}`); $('apiConnection').textContent='Connected'; apiNotice('Darkstat API connection succeeded.'); }
+    catch(e) { $('apiConnection').textContent='Unavailable'; apiNotice(`Connection failed: ${e.message}. Local fallback data still works.`,true); }
+  }
+
+  async function loadFactionData() {
+    $('apiConnection').textContent='Loading Factions…';
+    apiNotice('Loading factions…');
+    try {
+      const data = await apiPost('/api/factions', {filter_to_useful:true}, 20000);
+      const names = namedItems(data).map(x=>x.name);
+      if (names.length) factions=[...new Set(names)].sort((a,b)=>a.localeCompare(b));
+      saveApiCache();
+      updateApiUi(`Loaded ${factions.length.toLocaleString()} factions`);
+      $('apiConnection').textContent='Connected';
+      apiNotice(`Loaded ${factions.length.toLocaleString()} factions.`, false);
+    } catch (e) {
+      $('apiConnection').textContent='Partial';
+      apiNotice(`Faction loading failed: ${e.message}. Built-in faction suggestions remain available.`, true);
+    }
+  }
+
+  async function loadCommodityData() {
+    $('apiConnection').textContent='Loading Commodities…';
+    apiNotice('Loading commodities…');
+    try {
+      const data = await apiPost('/api/commodities', {
+        filter_to_useful:true,
+        include_market_goods:false,
+        filter_nicknames:[]
+      }, 25000);
+      commodities=namedItems(data);
+      saveApiCache();
+      populateCommoditySuggestions();
+    populateCommodityMarketSuggestions();
+      populateCommodityMarketSuggestions();
+      updateApiUi(`Loaded ${commodities.length.toLocaleString()} commodities`);
+      $('apiConnection').textContent='Connected';
+      apiNotice(`Loaded ${commodities.length.toLocaleString()} commodities.`, false);
+    } catch (e) {
+      $('apiConnection').textContent='Partial';
+      apiNotice(`Commodity loading failed: ${e.message}.`, true);
+    }
+  }
+
+  async function loadSystemData() {
+    $('apiConnection').textContent='Loading Systems…';
+    apiNotice('Loading systems…');
+    try {
+      const data = await apiPost('/api/systems', {}, 20000);
+      systems=namedItems(data);
+      saveApiCache();
+      updateApiUi(`Loaded ${systems.length.toLocaleString()} systems`);
+      $('apiConnection').textContent='Connected';
+      apiNotice(`Loaded ${systems.length.toLocaleString()} systems.`, false);
+    } catch (e) {
+      $('apiConnection').textContent='Partial';
+      apiNotice(`System loading failed: ${e.message}.`, true);
+    }
+  }
+
+  async function loadPobData() {
+    $('apiConnection').textContent='Loading PoBs…';
+    apiNotice('Loading public PoBs. This is a larger download and may take up to one minute…');
+    try {
+      const data = await apiPost('/api/pobs', {}, 60000);
+      publicPobs=Array.isArray(data)?data:[];
+      saveApiCache();
+      renderPobs();
+      updateApiUi(`Loaded ${publicPobs.length.toLocaleString()} public PoBs`);
+      $('apiConnection').textContent='Connected';
+      apiNotice(`Loaded ${publicPobs.length.toLocaleString()} public PoBs.`, false);
+    } catch (e) {
+      $('apiConnection').textContent='Partial';
+      apiNotice(`PoB loading failed: ${e.message}. The other API lists still work.`, true);
+    }
+  }
+
+  function saveApiCache() {
+    try {
+      localStorage.setItem('dgcApiCache',JSON.stringify({
+        savedAt:new Date().toISOString(),
+        factions, commodities, systems, publicPobs
+      }));
+    } catch (e) {
+      console.warn('API cache could not be saved:', e);
+      apiNotice('Data loaded, but the browser cache is full. Public PoB data may be too large to save locally.', true);
+    }
+  }
+
+
+  function isExcludedMarketCommodity(item) {
+    const nickname = clean(item?.nickname || '').toLowerCase();
+    const name = clean(item?.name || '').toLowerCase();
+
+    // Exclude credits and similar internal/system commodity records from
+    // market selectors, rankings, and market lookups.
+    // Exclude all internal credit commodity variants:
+    // commodity_credit, commodity_credit1, commodity_credit2, commodity_credit3, etc.
+    if (/^commodity_credits?\d*$/.test(nickname)) return true;
+    if (name === 'credit' || name === 'credits') return true;
+
+    // Exclude Rheinland military-group license commodities and variants.
+    // Examples: dsy_license_rh_m_grp, dsy_license_rh_m_grp2,
+    // dsy_license_rh_m_grp_something, etc.
+    if (/^dsy_license_rh_m_grp(?:\d+|_.*)?$/i.test(nickname)) return true;
+
+    return false;
+  }
+
+  function populateCommodityMarketSuggestions() {
+    const list = $('commodityMarketSuggestions');
+    if (!list) return;
+
+    list.innerHTML = commodities
+      .filter(item => !isExcludedMarketCommodity(item))
+      .slice()
+      .sort((a, b) => clean(a.name).localeCompare(clean(b.name)))
+      .map(item =>
+        `<option value="${escapeHtml(clean(item.name || item.nickname))}">${escapeHtml(clean(item.nickname || item.name))}</option>`
+      ).join('');
+  }
+
+  function resolveCommoditySelection(value) {
+    const q = clean(value).toLowerCase();
+    if (!q) return null;
+
+    const allowed = commodities.filter(item => !isExcludedMarketCommodity(item));
+
+    return allowed.find(item =>
+      clean(item.name).toLowerCase() === q ||
+      clean(item.nickname).toLowerCase() === q
+    ) || allowed.find(item =>
+      clean(item.name).toLowerCase().includes(q) ||
+      clean(item.nickname).toLowerCase().includes(q)
+    ) || null;
+  }
+
+
+  function populateGoodsMarketSuggestions() {
+    const list = $('goodsMarketSuggestions');
+    if (!list) return;
+
+    const commodityNicks = new Set(
+      commodities
+        .filter(item => !isExcludedMarketCommodity(item))
+        .map(item => clean(item.nickname || item.name).toLowerCase())
+        .filter(Boolean)
+    );
+
+    const byNickname = new Map();
+    for (const item of (Array.isArray(pobGoodsCache) ? pobGoodsCache : [])) {
+      if (isExcludedMarketCommodity(item)) continue;
+      const nickname = clean(item.nickname || item.name);
+      if (!nickname) continue;
+      const key = nickname.toLowerCase();
+
+      // Exclusive lists: anything classified as a commodity belongs only
+      // to Commodity Market and is omitted from Goods Market.
+      if (commodityNicks.has(key)) continue;
+
+      if (!byNickname.has(key)) {
+        byNickname.set(key, {
+          name: clean(item.name || nickname),
+          nickname
+        });
+      }
+    }
+
+    list.innerHTML = [...byNickname.values()]
+      .sort((a, b) => a.name.localeCompare(b.name))
+      .map(item =>
+        `<option value="${escapeHtml(item.name)}">${escapeHtml(item.nickname)}</option>`
+      ).join('');
+  }
+
+  function resolveGoodsSelection(value) {
+    const q = clean(value).toLowerCase();
+    if (!q || !Array.isArray(pobGoodsCache)) return null;
+
+    const commodityNicks = new Set(
+      commodities
+        .filter(item => !isExcludedMarketCommodity(item))
+        .map(item => clean(item.nickname || item.name).toLowerCase())
+        .filter(Boolean)
+    );
+
+    const allowed = pobGoodsCache.filter(item => {
+      if (isExcludedMarketCommodity(item)) return false;
+      const nickname = clean(item.nickname || item.name).toLowerCase();
+      return nickname && !commodityNicks.has(nickname);
+    });
+
+    return allowed.find(item =>
+      clean(item.name).toLowerCase() === q ||
+      clean(item.nickname).toLowerCase() === q
+    ) || allowed.find(item =>
+      clean(item.name).toLowerCase().includes(q) ||
+      clean(item.nickname).toLowerCase().includes(q)
+    ) || null;
+  }
+
+  function marketPrice(value) {
+    const n = Number(value);
+    return Number.isFinite(n) && n > 0 ? n : null;
+  }
+
+  function marketLocationLine(good) {
+    return [good.system_name, good.region_name, good.sector_coord]
+      .filter(Boolean)
+      .join(' • ');
+  }
+
+  function marketBaseType(good) {
+    return good.isPob || good.poB ? 'Player-Owned Base' : 'NPC Base';
+  }
+
+  function marketEntryKey(good) {
+    const baseKey = clean(
+      good.base_nickname ||
+      good.poB?.nickname ||
+      good.base_name ||
+      good.poB?.name ||
+      ''
+    ).toLowerCase();
+
+    const systemKey = clean(
+      good.system_nick ||
+      good.poB?.system_nickname ||
+      good.system_name ||
+      good.poB?.system_name ||
+      ''
+    ).toLowerCase();
+
+    return `${baseKey}|${systemKey}`;
+  }
+
+  function producerEntryMarketValue(good) {
+    if (Number.isFinite(Number(good._adjusted_market_value))) {
+      return Math.max(0, Number(good._adjusted_market_value));
+    }
+
+    const price =
+      marketPrice(good.price_base_sells_for) ??
+      marketPrice(good.poBGood?.price);
+
+    if (price === null || !(good.isPob || good.poBGood)) return 0;
+
+    const quantity = Number(good.poBGood?.quantity ?? 0);
+    const minStock = Number(good.poBGood?.min_stock ?? 0);
+    return Math.max(0, quantity - minStock) * price;
+  }
+
+  function consumerEntryMarketValue(good) {
+    if (Number.isFinite(Number(good._adjusted_market_value))) {
+      return Math.max(0, Number(good._adjusted_market_value));
+    }
+
+    const price =
+      marketPrice(good.price_base_buys_for) ??
+      marketPrice(good.poBGood?.sell_price);
+
+    if (price === null) return 0;
+
+    const quantity = good.poBGood?.quantity;
+    const maxStock = good.poBGood?.max_stock;
+    if (
+      quantity === undefined || quantity === null ||
+      maxStock === undefined || maxStock === null
+    ) return 0;
+
+    return Math.max(0, Number(maxStock) - Number(quantity)) * price;
+  }
+
+  function netDualRoleMarketEntries(producers, consumers) {
+    const producerMap = new Map(producers.map(good => [marketEntryKey(good), good]));
+    const consumerMap = new Map(consumers.map(good => [marketEntryKey(good), good]));
+
+    const removeProducer = new Set();
+    const removeConsumer = new Set();
+
+    for (const [key, producer] of producerMap) {
+      const consumer = consumerMap.get(key);
+      if (!consumer) continue;
+
+      const producerValue = producerEntryMarketValue(producer);
+      const consumerValue = consumerEntryMarketValue(consumer);
+
+      if (consumerValue > producerValue) {
+        consumer._adjusted_market_value = consumerValue - producerValue;
+        consumer._netted_value = producerValue;
+        removeProducer.add(key);
+      } else if (producerValue > consumerValue) {
+        producer._adjusted_market_value = producerValue - consumerValue;
+        producer._netted_value = consumerValue;
+        removeConsumer.add(key);
+      } else {
+        // Perfect cancellation leaves no external market value.
+        removeProducer.add(key);
+        removeConsumer.add(key);
+      }
+    }
+
+    return {
+      producers: producers.filter(good => !removeProducer.has(marketEntryKey(good))),
+      consumers: consumers.filter(good => !removeConsumer.has(marketEntryKey(good)))
+    };
+  }
+
+  function producerCard(good, overallMarketValue = 0) {
+    const sellPrice =
+      marketPrice(good.price_base_sells_for) ??
+      marketPrice(good.poBGood?.price);
+
+    const quantity = Number(good.poBGood?.quantity ?? 0);
+    const minStock = Number(good.poBGood?.min_stock ?? 0);
+
+    // For PoBs, only stock above minimum stock is actually available to buyers.
+    // For NPC entries, Darkstat does not expose a finite shop stock amount here.
+    const availableStock = good.isPob || good.poBGood
+      ? Math.max(0, quantity - minStock)
+      : null;
+
+    const rawMarketValue = availableStock !== null && sellPrice !== null
+      ? availableStock * sellPrice
+      : null;
+
+    const marketShare = rawMarketValue !== null
+      ? producerEntryMarketValue(good)
+      : null;
+
+    const stockText = availableStock !== null
+      ? ` • Available: ${availableStock.toLocaleString()}`
+      : '';
+
+    const marketSharePercent =
+      marketShare !== null && overallMarketValue > 0
+        ? (marketShare / overallMarketValue) * 100
+        : null;
+
+    const valueText = marketShare !== null
+      ? ` • Market value: $${marketShare.toLocaleString()}`
+      : '';
+
+    const shareText = marketSharePercent !== null
+      ? ` • Market share: ${marketSharePercent.toFixed(2)}%`
+      : '';
+
+    return `
+      <div class="history-item" style="font-family:inherit;cursor:default;">
+        <b>${escapeHtml(good.base_name || good.poB?.name || good.base_nickname || 'Unknown Base')}</b>
+        <div class="small muted" style="margin-top:5px;">
+          ${escapeHtml(marketBaseType(good))}
+          ${good.faction_name ? ` • ${escapeHtml(good.faction_name)}` : ''}
+        </div>
+        <div class="small" style="margin-top:4px;">
+          ${sellPrice !== null ? `Export: $${sellPrice.toLocaleString()}` : 'Export: —'}${stockText}
+        </div>
+        <div class="small" style="margin-top:4px;">
+          ${valueText ? valueText.slice(3) : 'Market value: —'}${shareText}
+        </div>
+        <div class="small muted" style="margin-top:4px;">
+          ${escapeHtml(marketLocationLine(good) || 'Location unavailable')}
+        </div>
+      </div>`;
+  }
+
+  function consumerCard(good, overallMarketValue = 0) {
+    const buyPrice =
+      marketPrice(good.price_base_buys_for) ??
+      marketPrice(good.poBGood?.sell_price);
+
+    const minStock = good.poBGood?.min_stock;
+    const maxStock = good.poBGood?.max_stock;
+    const quantity = good.poBGood?.quantity;
+
+    const stockParts = [];
+    if (quantity !== undefined && quantity !== null) stockParts.push(`Stock ${Number(quantity).toLocaleString()}`);
+    if (minStock !== undefined && minStock !== null) stockParts.push(`Min ${Number(minStock).toLocaleString()}`);
+    if (maxStock !== undefined && maxStock !== null) stockParts.push(`Max ${Number(maxStock).toLocaleString()}`);
+
+    const emptyStock =
+      maxStock !== undefined && maxStock !== null &&
+      quantity !== undefined && quantity !== null
+        ? Math.max(0, Number(maxStock) - Number(quantity))
+        : null;
+
+    const rawMarketValue = emptyStock !== null && buyPrice !== null
+      ? emptyStock * buyPrice
+      : null;
+
+    const marketValue = rawMarketValue !== null
+      ? consumerEntryMarketValue(good)
+      : null;
+
+    const marketSharePercent =
+      marketValue !== null && overallMarketValue > 0
+        ? (marketValue / overallMarketValue) * 100
+        : null;
+
+    const fundsAvailable = Number.isFinite(Number(good.funds_available))
+      ? Number(good.funds_available)
+      : null;
+
+    return `
+      <div class="history-item" style="font-family:inherit;cursor:default;">
+        <b>${escapeHtml(good.base_name || good.poB?.name || good.base_nickname || 'Unknown Base')}</b>
+        <div class="small muted" style="margin-top:5px;">
+          ${escapeHtml(marketBaseType(good))}
+          ${good.faction_name ? ` • ${escapeHtml(good.faction_name)}` : ''}
+        </div>
+        <div class="small" style="margin-top:4px;">
+          ${buyPrice !== null ? `Import: $${buyPrice.toLocaleString()}` : 'Import: —'}
+          ${emptyStock !== null ? ` • Empty stock: ${emptyStock.toLocaleString()}` : ''}
+        </div>
+        <div class="small" style="margin-top:4px;">
+          ${marketValue !== null ? `Market value: $${marketValue.toLocaleString()}` : 'Market value: —'}${marketSharePercent !== null ? ` • Market share: ${marketSharePercent.toFixed(2)}%` : ''}
+        </div>
+        <div class="small" style="margin-top:4px;">
+          ${fundsAvailable !== null ? `Funds available: $${fundsAvailable.toLocaleString()}` : 'Funds available: —'}
+        </div>
+        <div class="small muted" style="margin-top:4px;">
+          ${escapeHtml(marketLocationLine(good) || 'Location unavailable')}
+        </div>
+      </div>`;
+  }
+
+  function normalizePobGoodEntry(pobGood, baseEntry) {
+    const base = baseEntry?.base || {};
+    const shop = baseEntry?.shop_item || {};
+    const quantity = Number(shop.quantity ?? 0);
+    const minStock = Number(shop.min_stock ?? 0);
+
+    return {
+      isPob: true,
+      base_name: base.name || base.nickname || 'Unknown PoB',
+      base_nickname: base.nickname || '',
+      faction_name: base.faction_name || '',
+      faction_nick: base.faction_nickname || '',
+      system_name: base.system_name || '',
+      system_nick: base.system_nickname || '',
+      region_name: base.region_name || '',
+      sector_coord: base.sector_coord || '',
+      poB: base,
+      poBGood: shop,
+      funds_available: Number.isFinite(Number(base.money)) ? Number(base.money) : null,
+      nickname: pobGood.nickname,
+      name: pobGood.name,
+      price_base_buys_for: shop.sell_price,
+      price_base_sells_for: shop.price,
+      base_sells: quantity > minStock
+    };
+  }
+
+
+  async function refreshCommodityMarketData() {
+    const button = $('refreshMarketDataButton');
+    const info = $('marketCommodityInfo');
+
+    if (button) {
+      button.disabled = true;
+      button.textContent = 'Refreshing…';
+    }
+
+    try {
+      if (info) info.textContent = 'Refreshing commodity list…';
+
+      const commodityData = await apiPost('/api/commodities', {
+        filter_to_useful:true,
+        include_market_goods:false,
+        filter_nicknames:[]
+      }, 25000);
+
+      commodities = namedItems(commodityData);
+      saveApiCache();
+      populateCommoditySuggestions();
+      populateCommodityMarketSuggestions();
+
+      if (info) info.textContent = 'Refreshing player-owned station market data…';
+
+      pobGoodsCache = await apiPost('/api/pob_goods', {}, 60000);
+      populateCommodityMarketSuggestions();
+      populateGoodsMarketSuggestions();
+      renderTopCommodityMarkets();
+      renderTopGoodsMarkets();
+
+      const commodityCount = commodities.length;
+      const stationRecordCount = Array.isArray(pobGoodsCache) ? pobGoodsCache.length : 0;
+
+      if (info) {
+        info.textContent =
+          `Market data refreshed — ${commodityCount.toLocaleString()} commodities and ` +
+          `${stationRecordCount.toLocaleString()} PoB market records loaded.`;
+      }
+    } catch (error) {
+      if (info) info.textContent = `Market data refresh failed: ${error.message}`;
+    } finally {
+      if (button) {
+        button.disabled = false;
+        button.textContent = 'Refresh Market Data';
+      }
+    }
+  }
+
+
+
+  async function refreshGoodsMarketData() {
+    const button = $('refreshGoodsMarketDataButton');
+    const info = $('marketGoodsInfo');
+
+    if (button) {
+      button.disabled = true;
+      button.textContent = 'Refreshing…';
+    }
+
+    try {
+      if (info) info.textContent = 'Refreshing player-owned-base goods market data…';
+      pobGoodsCache = await apiPost('/api/pob_goods', {}, 60000);
+      populateGoodsMarketSuggestions();
+      renderTopGoodsMarkets();
+
+      const count = Array.isArray(pobGoodsCache) ? pobGoodsCache.length : 0;
+      if (info) {
+        info.textContent = `Goods market data refreshed — ${count.toLocaleString()} PoB good records loaded.`;
+      }
+    } catch (error) {
+      if (info) info.textContent = `Goods market refresh failed: ${error.message}`;
+    } finally {
+      if (button) {
+        button.disabled = false;
+        button.textContent = 'Refresh Market Data';
+      }
+    }
+  }
+
+  async function getPobMarketEntries(selected, timeoutMs = 60000) {
+    if (!Array.isArray(pobGoodsCache)) {
+      pobGoodsCache = await apiPost('/api/pob_goods', {}, timeoutMs);
+      populateCommodityMarketSuggestions();
+      populateGoodsMarketSuggestions();
+      renderTopCommodityMarkets();
+      renderTopGoodsMarkets();
+    }
+
+    const qNick = clean(selected.nickname).toLowerCase();
+    const qName = clean(selected.name).toLowerCase();
+
+    const matches = (Array.isArray(pobGoodsCache) ? pobGoodsCache : [])
+      .filter(item => !isExcludedMarketCommodity(item))
+      .filter(item =>
+        clean(item.nickname).toLowerCase() === qNick ||
+        clean(item.name).toLowerCase() === qName
+      );
+
+    return matches.flatMap(item =>
+      (Array.isArray(item.bases) ? item.bases : []).map(baseEntry =>
+        normalizePobGoodEntry(item, baseEntry)
+      )
+    );
+  }
+
+
+  function dedupeMarketEntries(entries, mode) {
+    const map = new Map();
+
+    for (const good of entries) {
+      const baseKey = clean(
+        good.base_nickname ||
+        good.poB?.nickname ||
+        good.base_name ||
+        good.poB?.name ||
+        ''
+      ).toLowerCase();
+
+      const systemKey = clean(
+        good.system_nick ||
+        good.poB?.system_nickname ||
+        good.system_name ||
+        good.poB?.system_name ||
+        ''
+      ).toLowerCase();
+
+      const key = `${baseKey}|${systemKey}`;
+      const current = map.get(key);
+
+      if (!current) {
+        map.set(key, good);
+        continue;
+      }
+
+      const currentPrice = mode === 'producer'
+        ? (
+            marketPrice(current.price_base_sells_for) ??
+            marketPrice(current.poBGood?.price) ??
+            Infinity
+          )
+        : (
+            marketPrice(current.price_base_buys_for) ??
+            marketPrice(current.poBGood?.sell_price) ??
+            -Infinity
+          );
+
+      const newPrice = mode === 'producer'
+        ? (
+            marketPrice(good.price_base_sells_for) ??
+            marketPrice(good.poBGood?.price) ??
+            Infinity
+          )
+        : (
+            marketPrice(good.price_base_buys_for) ??
+            marketPrice(good.poBGood?.sell_price) ??
+            -Infinity
+          );
+
+      // For suppliers, keep the cheaper duplicate.
+      // For consumers, keep the higher-paying duplicate.
+      if (
+        (mode === 'producer' && newPrice < currentPrice) ||
+        (mode === 'consumer' && newPrice > currentPrice)
+      ) {
+        map.set(key, good);
+      }
+    }
+
+    return [...map.values()];
+  }
+
+
+  function calculatePobCommodityMarketValue(pobGood) {
+    const bases = Array.isArray(pobGood?.bases) ? pobGood.bases : [];
+
+    // Build entries using the exact same PoB normalization used by the
+    // detailed Producers & Consumers view.
+    const normalized = bases
+      .filter(baseEntry => !!baseEntry?.base)
+      .map(baseEntry => normalizePobGoodEntry(pobGood, baseEntry));
+
+    // Same duplicate rules as the detailed market.
+    let rawProducers = dedupeMarketEntries(
+      normalized.filter(good => {
+        const q = Number(good.poBGood?.quantity ?? 0);
+        const min = Number(good.poBGood?.min_stock ?? 0);
+        return marketPrice(good.poBGood?.price) !== null && q > min;
+      }),
+      'producer'
+    );
+
+    let rawConsumers = dedupeMarketEntries(
+      normalized.filter(good => {
+        const q = Number(good.poBGood?.quantity ?? 0);
+        const max = Number(good.poBGood?.max_stock ?? 0);
+        return marketPrice(good.poBGood?.sell_price) !== null && q < max;
+      }),
+      'consumer'
+    );
+
+    // Same netting rule as the detailed market.
+    {
+      const netted = netDualRoleMarketEntries(rawProducers, rawConsumers);
+      rawProducers = netted.producers;
+      rawConsumers = netted.consumers;
+    }
+
+    // Same median-price rule as the detailed market:
+    // remove consumers paying below the median.
+    const prices = rawConsumers
+      .map(good => marketPrice(good.poBGood?.sell_price))
+      .filter(v => v !== null)
+      .sort((a, b) => a - b);
+
+    let consumerMedian = null;
+    if (prices.length) {
+      const mid = Math.floor(prices.length / 2);
+      consumerMedian = prices.length % 2
+        ? prices[mid]
+        : (prices[mid - 1] + prices[mid]) / 2;
+    }
+
+    const consumers = rawConsumers.filter(good => {
+      const price = marketPrice(good.poBGood?.sell_price);
+
+      if (!(consumerMedian === null || (price !== null && price >= consumerMedian))) {
+        return false;
+      }
+
+      const quantity = good.poBGood?.quantity;
+      const maxStock = good.poBGood?.max_stock;
+      const funds = Number.isFinite(Number(good.funds_available))
+        ? Number(good.funds_available)
+        : null;
+
+      // Same liquidity rule as the detailed market:
+      // funds must be strictly greater than 5% of this entry's market value.
+      if (
+        funds === null ||
+        price === null ||
+        quantity === undefined || quantity === null ||
+        maxStock === undefined || maxStock === null
+      ) {
+        return true;
+      }
+
+      const emptyStock = Math.max(0, Number(maxStock) - Number(quantity));
+      const entryMarketValue = emptyStock * price;
+      return funds > (entryMarketValue * 0.05);
+    });
+
+    const producerValue = rawProducers.reduce(
+      (sum, good) => sum + producerEntryMarketValue(good),
+      0
+    );
+
+    const consumerValue = consumers.reduce(
+      (sum, good) => sum + consumerEntryMarketValue(good),
+      0
+    );
+
+    return {
+      producerValue,
+      consumerValue,
+      totalValue: consumerValue
+    };
+  }
+
+
+  function renderTopCommodityMarkets() {
+    const container = $('topCommodityMarkets');
+    if (!container) return;
+
+    if (!Array.isArray(pobGoodsCache) || !pobGoodsCache.length || !commodities.length) {
+      container.innerHTML = '<div class="muted">Refresh Market Data to calculate rankings.</div>';
+      return;
+    }
+
+    const commodityNicks = new Set(
+      commodities
+        .filter(item => !isExcludedMarketCommodity(item))
+        .map(item => clean(item.nickname).toLowerCase())
+    );
+
+    const byCommodity = new Map();
+
+    for (const item of pobGoodsCache) {
+      if (isExcludedMarketCommodity(item)) continue;
+      const nickname = clean(item.nickname || item.name);
+      if (!nickname || !commodityNicks.has(nickname.toLowerCase())) continue;
+
+      const values = calculatePobCommodityMarketValue(item);
+      if (values.consumerValue <= 0) continue;
+
+      const key = nickname.toLowerCase();
+      const existing = byCommodity.get(key);
+      if (existing) {
+        existing.consumerValue += values.consumerValue;
+        existing.producerValue += values.producerValue;
+      } else {
+        byCommodity.set(key, {
+          name: clean(item.name || nickname),
+          nickname,
+          consumerValue: values.consumerValue,
+          producerValue: values.producerValue
+        });
+      }
+    }
+
+    const ranked = [...byCommodity.values()]
+      .sort((a, b) => b.consumerValue - a.consumerValue)
+      ;
+
+    if (!ranked.length) {
+      container.innerHTML = '<div class="muted">No commodity market values available.</div>';
+      if ($('globalCommodityMarketValue')) $('globalCommodityMarketValue').textContent = '';
+      return;
+    }
+
+    const totalConsumerValue = ranked.reduce((sum, item) => sum + Number(item.consumerValue || 0), 0);
+    const totalProducerValue = ranked.reduce((sum, item) => sum + Number(item.producerValue || 0), 0);
+
+    if ($('globalCommodityMarketValue')) {
+      $('globalCommodityMarketValue').textContent =
+        `Consumer $${totalConsumerValue.toLocaleString()} • Producer $${totalProducerValue.toLocaleString()}`;
+    }
+
+    const grandTotal = totalConsumerValue;
+
+    container.innerHTML = ranked.map((item, index) => {
+      const share = grandTotal > 0 ? (item.consumerValue / grandTotal) * 100 : 0;
+      const producerValue = Number(item.producerValue || 0);
+      const signedDelta = Number(item.consumerValue || 0) - producerValue;
+      const absoluteDelta = Math.abs(signedDelta);
+      const deltaColor = signedDelta > 0
+        ? 'var(--bad)'
+        : signedDelta < 0
+          ? 'var(--good)'
+          : 'var(--muted)';
+      const deltaPrefix = signedDelta > 0 ? '+' : signedDelta < 0 ? '-' : '';
+
+      return `
+        <button type="button"
+                class="history-item"
+                data-market-nickname="${escapeHtml(item.nickname)}"
+                style="font-family:inherit;text-align:left;width:100%;"
+                onclick="openTopCommodityMarket('${escapeHtml(item.nickname).replace(/'/g, '&#39;')}')">
+          <div style="display:flex;justify-content:space-between;gap:10px;">
+            <b>${index + 1}. ${escapeHtml(item.name)}</b>
+            <span>${share.toFixed(1)}%</span>
+          </div>
+          <div class="small muted" style="margin-top:4px;">
+            Consumer market value: $${item.consumerValue.toLocaleString()}
+          </div>
+          <div class="small muted" style="margin-top:3px;">
+            Producer market value: $${producerValue.toLocaleString()}
+          </div>
+          <div class="small" style="margin-top:3px;color:${deltaColor};">
+            Delta: ${deltaPrefix}$${absoluteDelta.toLocaleString()}
+          </div>
+        </button>`;
+    }).join('');
+  }
+
+
+  function renderTopGoodsMarkets() {
+    const container = $('topGoodsMarkets');
+    if (!container) return;
+
+    if (!Array.isArray(pobGoodsCache) || !pobGoodsCache.length) {
+      container.innerHTML = '<div class="muted">Refresh Market Data to calculate rankings.</div>';
+      return;
+    }
+
+    const commodityNicks = new Set(
+      commodities
+        .filter(item => !isExcludedMarketCommodity(item))
+        .map(item => clean(item.nickname || item.name).toLowerCase())
+        .filter(Boolean)
+    );
+
+    const byGood = new Map();
+
+    for (const item of pobGoodsCache) {
+      if (isExcludedMarketCommodity(item)) continue;
+
+      const nickname = clean(item.nickname || item.name);
+      if (!nickname) continue;
+
+      // Commodity entries belong exclusively to Commodity Market.
+      if (commodityNicks.has(nickname.toLowerCase())) continue;
+
+      const values = calculatePobCommodityMarketValue(item);
+      if (values.consumerValue <= 0) continue;
+
+      const key = nickname.toLowerCase();
+      const existing = byGood.get(key);
+      if (existing) {
+        existing.consumerValue += values.consumerValue;
+        existing.producerValue += values.producerValue;
+      } else {
+        byGood.set(key, {
+          name: clean(item.name || nickname),
+          nickname,
+          consumerValue: values.consumerValue,
+          producerValue: values.producerValue
+        });
+      }
+    }
+
+    const ranked = [...byGood.values()]
+      .sort((a, b) => b.consumerValue - a.consumerValue)
+      ;
+
+    if (!ranked.length) {
+      container.innerHTML = '<div class="muted">No goods market values available.</div>';
+      if ($('globalGoodsMarketValue')) $('globalGoodsMarketValue').textContent = '';
+      return;
+    }
+
+    const totalConsumerValue = ranked.reduce((sum, item) => sum + Number(item.consumerValue || 0), 0);
+    const totalProducerValue = ranked.reduce((sum, item) => sum + Number(item.producerValue || 0), 0);
+
+    if ($('globalGoodsMarketValue')) {
+      $('globalGoodsMarketValue').textContent =
+        `Consumer $${totalConsumerValue.toLocaleString()} • Producer $${totalProducerValue.toLocaleString()}`;
+    }
+
+    const grandTotal = totalConsumerValue;
+
+    container.innerHTML = ranked.map((item, index) => {
+      const share = grandTotal > 0 ? (item.consumerValue / grandTotal) * 100 : 0;
+      const producerValue = Number(item.producerValue || 0);
+      const signedDelta = Number(item.consumerValue || 0) - producerValue;
+      const absoluteDelta = Math.abs(signedDelta);
+      const deltaColor = signedDelta > 0
+        ? 'var(--bad)'
+        : signedDelta < 0
+          ? 'var(--good)'
+          : 'var(--muted)';
+      const deltaPrefix = signedDelta > 0 ? '+' : signedDelta < 0 ? '-' : '';
+
+      return `
+        <button type="button"
+                class="history-item"
+                data-market-nickname="${escapeHtml(item.nickname)}"
+                style="font-family:inherit;text-align:left;width:100%;"
+                onclick="openTopGoodsMarket('${escapeHtml(item.nickname).replace(/'/g, '&#39;')}')">
+          <div style="display:flex;justify-content:space-between;gap:10px;">
+            <b>${index + 1}. ${escapeHtml(item.name)}</b>
+            <span>${share.toFixed(1)}%</span>
+          </div>
+          <div class="small muted" style="margin-top:4px;">
+            Consumer market value: $${item.consumerValue.toLocaleString()}
+          </div>
+          <div class="small muted" style="margin-top:3px;">
+            Producer market value: $${producerValue.toLocaleString()}
+          </div>
+          <div class="small" style="margin-top:3px;color:${deltaColor};">
+            Delta: ${deltaPrefix}$${absoluteDelta.toLocaleString()}
+          </div>
+        </button>`;
+    }).join('');
+  }
+
+  async function openTopGoodsMarket(nickname) {
+    const input = $('marketGood');
+    if (!input) return;
+    input.value = nickname;
+    await lookupGoodsMarket();
+  }
+
+  function scrollMarketListToSelection(listId, nickname) {
+    const list = $(listId);
+    if (!list) return;
+
+    const target = [...list.querySelectorAll('[data-market-nickname]')]
+      .find(el => clean(el.dataset.marketNickname).toLowerCase() === clean(nickname).toLowerCase());
+
+    if (!target) return;
+
+    target.scrollIntoView({
+      behavior: 'smooth',
+      block: 'center'
+    });
+
+    target.style.boxShadow = '0 0 0 2px var(--accent)';
+    setTimeout(() => {
+      target.style.boxShadow = '';
+    }, 1400);
+  }
+
+  async function openTopCommodityMarket(nickname) {
+    const input = $('marketCommodity');
+    if (!input) return;
+
+    input.value = nickname;
+    await lookupCommodityMarket();
+  }
+
+  async function runMarketLookup({
+    selected,
+    input,
+    info,
+    producersEl,
+    consumersEl,
+    producerCountEl,
+    consumerCountEl,
+    producerTitleValueEl,
+    consumerTitleValueEl,
+    button,
+    includeNpcBases
+  }) {
+    input.value = selected.name;
+    button.disabled = true;
+    button.textContent = 'Loading…';
+
+    info.textContent = includeNpcBases
+      ? `Loading PoB and NPC market data for ${selected.name} (${selected.nickname})…`
+      : `Loading player-owned-base market data for ${selected.name} (${selected.nickname})…`;
+
+    producersEl.innerHTML = '<div class="muted">Loading suppliers…</div>';
+    consumersEl.innerHTML = '<div class="muted">Loading buyers…</div>';
+
+    try {
+      const pobEntriesPromise = getPobMarketEntries(selected, 60000);
+      let npcEntriesPromise = Promise.resolve([]);
+
+      if (includeNpcBases) {
+        npcEntriesPromise = apiPost('/api/commodities', {
+          filter_nicknames: [selected.nickname],
+          filter_to_useful: false,
+          include_market_goods: true
+        }, 45000).then(result => {
+          const commodity = Array.isArray(result)
+            ? result.find(item => item.nickname === selected.nickname) || result[0]
+            : null;
+          const marketGoods = Array.isArray(commodity?.market_goods)
+            ? commodity.market_goods
+            : [];
+          return marketGoods.filter(good => !good.poB && !good.poBGood);
+        });
+      }
+
+      const [pobEntries, npcEntries] = await Promise.all([pobEntriesPromise, npcEntriesPromise]);
+      const goods = [...pobEntries, ...npcEntries];
+
+      let rawProducers = dedupeMarketEntries(
+        goods.filter(good => {
+          if (good.isPob) {
+            const q = Number(good.poBGood?.quantity ?? 0);
+            const min = Number(good.poBGood?.min_stock ?? 0);
+            return marketPrice(good.poBGood?.price) !== null && q > min;
+          }
+          return good.base_sells === true || marketPrice(good.price_base_sells_for) !== null;
+        }),
+        'producer'
+      );
+
+      let rawConsumers = dedupeMarketEntries(
+        goods.filter(good => {
+          if (good.isPob) {
+            const q = Number(good.poBGood?.quantity ?? 0);
+            const max = Number(good.poBGood?.max_stock ?? 0);
+            return marketPrice(good.poBGood?.sell_price) !== null && q < max;
+          }
+          return marketPrice(good.price_base_buys_for) !== null;
+        }),
+        'consumer'
+      );
+
+      // Net producer and consumer market value for stations that do both.
+      // The smaller side is removed; the surviving side keeps only the difference.
+      {
+        const netted = netDualRoleMarketEntries(rawProducers, rawConsumers);
+        rawProducers = netted.producers;
+        rawConsumers = netted.consumers;
+      }
+
+      function median(values) {
+        const nums = values.filter(Number.isFinite).sort((a,b) => a-b);
+        if (!nums.length) return null;
+        const mid = Math.floor(nums.length / 2);
+        return nums.length % 2 ? nums[mid] : (nums[mid - 1] + nums[mid]) / 2;
+      }
+
+      const producerMedian = median(rawProducers.map(good =>
+        marketPrice(good.price_base_sells_for) ?? marketPrice(good.poBGood?.price)
+      ).filter(v => v !== null));
+
+      const consumerMedian = median(rawConsumers.map(good =>
+        marketPrice(good.price_base_buys_for) ?? marketPrice(good.poBGood?.sell_price)
+      ).filter(v => v !== null));
+
+      const producers = rawProducers
+        .filter(good => {
+          const price = marketPrice(good.price_base_sells_for) ?? marketPrice(good.poBGood?.price);
+          return producerMedian === null || (price !== null && price <= producerMedian);
+        })
+        .sort((a, b) =>
+          producerEntryMarketValue(b) - producerEntryMarketValue(a)
+        );
+
+      const consumers = rawConsumers
+        .filter(good => {
+          const price = marketPrice(good.price_base_buys_for) ?? marketPrice(good.poBGood?.sell_price);
+          if (!(consumerMedian === null || (price !== null && price >= consumerMedian))) return false;
+
+          const quantity = good.poBGood?.quantity;
+          const maxStock = good.poBGood?.max_stock;
+          const funds = Number.isFinite(Number(good.funds_available))
+            ? Number(good.funds_available) : null;
+
+          if (
+            funds === null || price === null ||
+            quantity === undefined || quantity === null ||
+            maxStock === undefined || maxStock === null
+          ) return true;
+
+          const entryMarketValue = consumerEntryMarketValue(good);
+          return funds > (entryMarketValue * 0.05);
+        })
+        .sort((a, b) =>
+          consumerEntryMarketValue(b) - consumerEntryMarketValue(a)
+        );
+
+      producerCountEl.textContent =
+        `${producers.length.toLocaleString()} result${producers.length === 1 ? '' : 's'}`;
+      consumerCountEl.textContent =
+        `${consumers.length.toLocaleString()} result${consumers.length === 1 ? '' : 's'}`;
+
+      const producerMarketTotal = producers.reduce(
+        (sum, good) => sum + producerEntryMarketValue(good),
+        0
+      );
+
+      const consumerMarketTotal = consumers.reduce(
+        (sum, good) => sum + consumerEntryMarketValue(good),
+        0
+      );
+
+      if (producerTitleValueEl) {
+        producerTitleValueEl.textContent = `$${producerMarketTotal.toLocaleString()}`;
+      }
+      if (consumerTitleValueEl) {
+        consumerTitleValueEl.textContent = `$${consumerMarketTotal.toLocaleString()}`;
+      }
+
+      producersEl.innerHTML = producers.length
+        ? producers.map(good => producerCard(good, producerMarketTotal)).join('')
+        : '<div class="muted">No suppliers found in the returned market data.</div>';
+
+      consumersEl.innerHTML = consumers.length
+        ? consumers.map(good => consumerCard(good, consumerMarketTotal)).join('')
+        : '<div class="muted">No buyers found in the returned market data.</div>';
+
+      info.textContent =
+        `${selected.name} (${selected.nickname}) — ${producers.length} supplier(s), ${consumers.length} buyer(s)` +
+        `${producerMedian !== null ? ` — Producer median buy cost: $${producerMedian.toLocaleString()}` : ''}` +
+        `${consumerMedian !== null ? ` — Consumer median sell return: $${consumerMedian.toLocaleString()}` : ''}` +
+        `${producerMarketTotal > 0 ? ` — Producer market value: $${producerMarketTotal.toLocaleString()}` : ''}` +
+        `${consumerMarketTotal > 0 ? ` — Consumer market value: $${consumerMarketTotal.toLocaleString()}` : ''}` +
+        ` — PoB consumers require funds > 5% of their entry market value.` +
+        `${includeNpcBases ? ' — NPC bases included.' : ' — Player-owned bases only.'}`;
+
+    } catch (error) {
+      info.textContent = `Market lookup failed: ${error.message}`;
+      producersEl.innerHTML = '<div class="muted">Unable to load suppliers.</div>';
+      consumersEl.innerHTML = '<div class="muted">Unable to load buyers.</div>';
+      producerCountEl.textContent = '0 results';
+      consumerCountEl.textContent = '0 results';
+      if (producerTitleValueEl) producerTitleValueEl.textContent = '';
+      if (consumerTitleValueEl) consumerTitleValueEl.textContent = '';
+    } finally {
+      button.disabled = false;
+      button.textContent = 'Find Producers & Consumers';
+    }
+  }
+
+  async function lookupCommodityMarket() {
+    const input = $('marketCommodity');
+    const info = $('marketCommodityInfo');
+    const button = $('marketLookupButton');
+
+    if (!commodities.length) {
+      info.textContent = 'Commodity list is not loaded. Refresh Market Data first.';
+      return;
+    }
+
+    const selected = resolveCommoditySelection(input.value);
+    if (!selected) {
+      info.textContent = `No commodity matched "${clean(input.value)}". Choose a commodity suggestion.`;
+      return;
+    }
+
+    await runMarketLookup({
+      selected,
+      input,
+      info,
+      producersEl: $('commodityProducers'),
+      consumersEl: $('commodityConsumers'),
+      producerCountEl: $('commodityProducerCount'),
+      consumerCountEl: $('commodityConsumerCount'),
+      producerTitleValueEl: $('commodityProducerTotalTitle'),
+      consumerTitleValueEl: $('commodityConsumerTotalTitle'),
+      button,
+      includeNpcBases: $('includeNpcBases')?.checked === true
+    });
+
+    scrollMarketListToSelection('topCommodityMarkets', selected.nickname);
+  }
+
+  async function lookupGoodsMarket() {
+    const input = $('marketGood');
+    const info = $('marketGoodsInfo');
+    const button = $('goodsLookupButton');
+
+    if (!Array.isArray(pobGoodsCache)) {
+      info.textContent = 'PoB goods data is not loaded. Refresh Market Data first.';
+      return;
+    }
+
+    const selected = resolveGoodsSelection(input.value);
+    if (!selected) {
+      info.textContent = `No PoB good matched "${clean(input.value)}". Choose a goods suggestion.`;
+      return;
+    }
+
+    await runMarketLookup({
+      selected,
+      input,
+      info,
+      producersEl: $('goodsProducers'),
+      consumersEl: $('goodsConsumers'),
+      producerCountEl: $('goodsProducerCount'),
+      consumerCountEl: $('goodsConsumerCount'),
+      producerTitleValueEl: $('goodsProducerTotalTitle'),
+      consumerTitleValueEl: $('goodsConsumerTotalTitle'),
+      button,
+      includeNpcBases: false
+    });
+
+    scrollMarketListToSelection('topGoodsMarkets', selected.nickname);
+  }
+
+
+  function restoreApiCache() {
+    try { const c=JSON.parse(localStorage.getItem('dgcApiCache')||'null'); if(!c)return; if(c.factions?.length)factions=c.factions;if(c.commodities)commodities=c.commodities;if(c.systems)systems=c.systems;if(c.publicPobs)publicPobs=c.publicPobs; populateCommoditySuggestions();renderPobs();updateApiUi(`Cached ${new Date(c.savedAt).toLocaleString()}`); }
+    catch(e){console.warn(e)}
+  }
+
+  function renderPobs() {
+    if(!$('pobList'))return; const q=clean($('pobSearch')?.value||'').toLowerCase();
+    const rows=publicPobs.filter(p=>[p.name,p.nickname,p.faction_name,p.faction_nickname,p.system_name,p.region_name,p.sector_coord].filter(Boolean).join(' ').toLowerCase().includes(q)).slice(0,100);
+    $('pobList').innerHTML=!publicPobs.length?'<div class="muted">No PoB data loaded yet.</div>':rows.length?rows.map(p=>`<div class="history-item" style="font-family:inherit;cursor:default"><b>${escapeHtml(p.name||p.nickname||'Unnamed PoB')}</b><div class="small muted" style="margin-top:5px">${escapeHtml([p.system_name,p.region_name,p.sector_coord].filter(Boolean).join(' • ')||'Location unavailable')}</div><div class="small" style="margin-top:4px">${p.faction_name?`Faction: ${escapeHtml(p.faction_name)} • `:''}Level: ${p.level??'—'} • Health: ${p.health??'—'} • Cargo: ${p.cargospace??'—'}</div></div>`).join(''):'<div class="muted">No matching PoBs.</div>';
+  }
+
+  function clearApiCache(){localStorage.removeItem('dgcApiCache');commodities=[];systems=[];publicPobs=[];populateCommoditySuggestions();renderPobs();updateApiUi('Cache cleared; built-in factions remain.');$('apiConnection').textContent='Not tested';apiNotice('API cache cleared.');}
+
+  let activeFactionIndex = -1;
+
+  function factionMatches(query) {
+    const q = clean(query).toLowerCase();
+    if (!q) return factions.slice(0, 18);
+    return factions.map(name => {
+      const lower=name.toLowerCase();
+      let score=lower.startsWith(q)?0:lower.includes(q)?1:2;
+      if(score===2){ let pos=0; for(const ch of q){ pos=lower.indexOf(ch,pos); if(pos===-1) break; pos+=1; } if(pos===-1) return null; }
+      return {name,score};
+    }).filter(Boolean).sort((a,b)=>a.score-b.score||a.name.localeCompare(b.name)).slice(0,18).map(x=>x.name);
+  }
+
+  function renderFactionMenu() {
+    const combo=$('accessEntryCombo'), menu=$('accessEntryMenu');
+    if($('accessTarget').value!=='faction'){ combo.classList.remove('open'); menu.innerHTML=''; activeFactionIndex=-1; return; }
+    const matches=factionMatches($('accessEntry').value);
+    activeFactionIndex=Math.min(activeFactionIndex,matches.length-1);
+    if(!matches.length) menu.innerHTML=`<div class="combo-empty">No matching faction. Press Enter or click away to use "${escapeHtml(clean($('accessEntry').value))}" as free text.</div>`;
+    else {
+      menu.innerHTML=matches.map((name,index)=>`<button type="button" class="combo-option ${index===activeFactionIndex?'active':''}" data-faction-index="${index}">${escapeHtml(name)}</button>`).join('');
+      menu.querySelectorAll('.combo-option').forEach((button,index)=>button.addEventListener('mousedown',event=>{ event.preventDefault(); $('accessEntry').value=matches[index]; combo.classList.remove('open'); activeFactionIndex=-1; updateAccess(); }));
+    }
+    combo.classList.add('open');
+  }
+
+  function updateAccessEntryMode() {
+    const type=$('accessTarget').value, label=$('accessEntryLabel'), input=$('accessEntry'), hint=$('accessEntryHint');
+    if(type==='faction'){ label.textContent='Faction Name'; input.placeholder='Search or type any faction'; hint.textContent='Choose a known faction or enter a custom faction name.'; }
+    else if(type==='tag'){ label.textContent='Clan Tag'; input.placeholder='Enter a clan tag'; hint.textContent='Free-text tag entry.'; $('accessEntryCombo').classList.remove('open'); }
+    else { label.textContent='Player Name'; input.placeholder='Enter a player name'; hint.textContent='Free-text player name.'; $('accessEntryCombo').classList.remove('open'); }
+  }
+
+  $('accessEntry').addEventListener('focus', renderFactionMenu);
+  $('accessEntry').addEventListener('input',()=>{ activeFactionIndex=-1; renderFactionMenu(); updateAccess(); });
+  $('accessEntry').addEventListener('keydown',event=>{
+    if($('accessTarget').value!=='faction') return;
+    const matches=factionMatches($('accessEntry').value);
+    if(event.key==='ArrowDown'){ event.preventDefault(); activeFactionIndex=Math.min(activeFactionIndex+1,matches.length-1); renderFactionMenu(); }
+    else if(event.key==='ArrowUp'){ event.preventDefault(); activeFactionIndex=Math.max(activeFactionIndex-1,0); renderFactionMenu(); }
+    else if(event.key==='Enter'){ if(activeFactionIndex>=0&&matches[activeFactionIndex]){ event.preventDefault(); $('accessEntry').value=matches[activeFactionIndex]; } $('accessEntryCombo').classList.remove('open'); activeFactionIndex=-1; updateAccess(); }
+    else if(event.key==='Escape'){ $('accessEntryCombo').classList.remove('open'); activeFactionIndex=-1; }
+  });
+  document.addEventListener('mousedown',event=>{ if(!$('accessEntryCombo').contains(event.target)){ $('accessEntryCombo').classList.remove('open'); activeFactionIndex=-1; } });
+
+  function updateAccess() {
+    const action = $('accessAction').value;
+    const isList = action === 'list';
+    $('accessTargetWrap').style.display = isList ? 'none' : 'flex';
+    $('accessEntryWrap').style.display = isList ? 'none' : 'flex';
+    $('accessCommand').textContent = isList
+      ? `/access list ${$('accessList').value}`
+      : `/access ${action} ${$('accessTarget').value} ${$('accessList').value} ${clean($('accessEntry').value)}`;
+  }
+
+  ['accessAction','accessList'].forEach(id => {
+    $(id).addEventListener('input', () => { updateAccessEntryMode(); updateAccess(); });
+  });
+  $('accessTarget').addEventListener('input', () => {
+    updateAccessEntryMode();
+    updateAccess();
+  });
+
+  function loadAccess(action, target, list, entry) {
+    $('accessAction').value = action;
+    $('accessTarget').value = target;
+    $('accessList').value = list;
+    $('accessEntry').value = entry;
+    updateAccessEntryMode();
+    updateAccess();
+  }
+
+  const baseCommands = [
+    { id:'help', label:'Help', syntax:'/base help [page]', desc:'Show the base help page.', fields:[{name:'page', label:'Page', type:'number', optional:true, value:'1'}] },
+    { id:'login', label:'Login', syntax:'/base login [password]', desc:'Login as a base administrator.', fields:[{name:'password', label:'Password', type:'text'}] },
+    { id:'addpwd', label:'Add Password', syntax:'/base addpwd [password] [viewshop]', desc:'Add an administrator password, or use View Shop for shop-view-only access.', fields:[{name:'password',label:'Password',type:'text'},{name:'viewshop',label:'Permission',type:'select',options:['','viewshop']}] },
+    { id:'rmpwd', label:'Remove Password', syntax:'/base rmpwd [password] [viewshop]', desc:'Remove an Admin password, or select View Shop to remove a shop-view-only password.', fields:[{name:'password', label:'Password', type:'text'},{name:'viewshop',label:'Permission',type:'select',options:['','viewshop']}] },
+    { id:'lstpwd', label:'List Passwords', syntax:'/base lstpwd [masterPassword]', desc:'List administrator passwords.', fields:[{name:'masterPassword', label:'Master Password', type:'text'}] },
+    { id:'setmasterpwd', label:'Set Master Password', syntax:'/base setmasterpwd [old password] [new password]', desc:'Change the base master password.', fields:[{name:'old',label:'Old Password',type:'text'},{name:'new',label:'New Password',type:'text'}] },
+    { id:'rep', label:'Set/Clear Affiliation', syntax:'/base rep [clear]', desc:'Set the base affiliation to the executing player faction, or clear it.', fields:[{name:'clear',label:'Action',type:'select',options:['','clear']}] },
+    { id:'defensemode', label:'Defense Mode', syntax:'/base defensemode', desc:'Control the base defense mode.', fields:[] },
+    { id:'info', label:'Edit Infocard', syntax:'/base info', desc:'Set the base infocard description.', fields:[] },
+    { id:'supplies', label:'View Supplies', syntax:'/base supplies', desc:'Print Crew, Food, Water, Oxygen, and repair material counts.', fields:[] },
+    { id:'setfood', label:'Set Preferred Food', syntax:'/base setfood [nr]', desc:'Select which food item the crew consumes first.', fields:[{name:'nr',label:'Food Index',type:'number',value:'1'}] },
+    { id:'repair', label:'Configure Repair Items', syntax:'/base repair [toggle|priority] [index]', desc:'Configure which repair items to use and prioritize.', fields:[{name:'mode',label:'Mode',type:'select',options:['toggle','priority']},{name:'index',label:'Item Index',type:'number',value:'1'}] },
+    { id:'setrestockmargin', label:'Set Restock Margin', syntax:'/base setrestockmargin', desc:'Set repair cost percentage compared with baseline.', fields:[{name:'percent',label:'Percentage',type:'number',value:'100'}] },
+    { id:'setpublic', label:'Public / Private API', syntax:'/base setpublic [public/private] [masterpassword]', desc:'Set the base visibility in external APIs.', fields:[{name:'visibility',label:'Visibility',type:'select',options:['public','private']},{name:'masterPassword',label:'Master Password',type:'text'}] },
+    { id:'defmod', label:'Defense Modules', syntax:'/base defmod', desc:'Control defense modules.', fields:[] },
+    { id:'shieldmod', label:'Shield Modules', syntax:'/base shieldmod', desc:'Control shield modules.', fields:[] },
+    { id:'swap', label:'Swap Modules', syntax:'/base swap [moduleIndex1] [moduleIndex2]', desc:'Swap two modules in the module list.', fields:[{name:'a',label:'Module Index 1',type:'number',value:'1'},{name:'b',label:'Module Index 2',type:'number',value:'2'}] },
+    { id:'setshield', label:'Set Vulnerability Window', syntax:'/base setshield [hour]', desc:'Set the vulnerability window starting hour in server time.', fields:[{name:'hour',label:'Server Hour',type:'number',value:'15'}] }
+  ];
+
+  function fieldHtml(field, prefix) {
+    const id = `${prefix}_${field.name}`;
+    if (field.type === 'select') {
+      return `<div class="field"><label for="${id}">${field.label}</label><select id="${id}">
+        ${field.options.map(o => `<option value="${o}">${o || (field.name === 'viewshop' ? 'Admin' : 'None')}</option>`).join('')}
+      </select></div>`;
+    }
+    const useCommodityList = field.name === 'item' && prefix === 'shop';
+    return `<div class="field"><label for="${id}">${field.label}${field.optional ? ' (optional)' : ''}</label>
+      <input id="${id}" type="${field.type || 'text'}" value="${field.value || ''}" ${useCommodityList ? 'list="commoditySuggestions" autocomplete="off"' : ''} /></div>`;
+  }
+
+  function initBaseCommands() {
+    $('baseCommandSelect').innerHTML = baseCommands.map(c => `<option value="${c.id}">${c.label}</option>`).join('');
+    $('baseCommandSelect').addEventListener('change', renderBaseFields);
+    renderBaseFields();
+  }
+
+  function renderBaseFields() {
+    const cfg = baseCommands.find(c => c.id === $('baseCommandSelect').value);
+    $('baseDescription').textContent = cfg.desc + ' Syntax: ' + cfg.syntax;
+    $('baseDynamicFields').innerHTML = `<div class="form-grid">${cfg.fields.map(f => fieldHtml(f,'base')).join('')}</div>`;
+    cfg.fields.forEach(f => $(`base_${f.name}`).addEventListener('input', updateBaseCommand));
+    updateBaseCommand();
+  }
+
+  function updateBaseCommand() {
+    const cfg = baseCommands.find(c => c.id === $('baseCommandSelect').value);
+    const args = cfg.fields.map(f => clean($(`base_${f.name}`).value)).filter(Boolean);
+    $('baseCommand').textContent = `/base ${cfg.id}${args.length ? ' ' + args.join(' ') : ''}`;
+  }
+
+  function updateBank() {
+    const action = $('bankAction').value;
+    $('bankCreditsWrap').style.display = action === 'status' ? 'none' : 'flex';
+    $('bankCommand').textContent = action === 'status'
+      ? '/bank status'
+      : `/bank ${action} ${clean($('bankCredits').value)}`;
+  }
+
+  $('bankAction').addEventListener('input', updateBank);
+  $('bankCredits').addEventListener('input', updateBank);
+
+  const shopFields = {
+    price: [
+      {name:'item',label:'Item',type:'text',value:'commodity_gold'},
+      {name:'buy',label:'Buy Price',type:'number',value:'100'},
+      {name:'sell',label:'Sell Price',type:'number',value:'90'}
+    ],
+    stock: [
+      {name:'item',label:'Item',type:'text',value:'commodity_gold'},
+      {name:'min',label:'Minimum Stock',type:'number',value:'0'},
+      {name:'max',label:'Maximum Stock',type:'number',value:'1000'}
+    ],
+    remove: [{name:'item',label:'Item',type:'text',value:'commodity_gold'}],
+    pin: [{name:'item',label:'Item',type:'text',value:'commodity_gold'}],
+    unpin: [{name:'item',label:'Item',type:'text',value:'commodity_gold'}],
+    public: [{name:'item',label:'Item',type:'text',value:'commodity_gold'}],
+    private: [{name:'item',label:'Item',type:'text',value:'commodity_gold'}],
+    addcargo: [{name:'item',label:'Internal Item Nickname',type:'text',value:'commodity_gold'}],
+    page: [{name:'page',label:'Page',type:'number',value:'1'}]
+  };
+
+  function renderShopFields() {
+    const action = $('shopAction').value;
+    const fields = shopFields[action];
+    $('shopDynamicFields').innerHTML = `<div class="form-grid">${fields.map(f => fieldHtml(f,'shop')).join('')}</div>`;
+    fields.forEach(f => $(`shop_${f.name}`).addEventListener('input', updateShopCommand));
+    updateShopCommand();
+  }
+
+  function updateShopCommand() {
+    const action = $('shopAction').value;
+    const args = shopFields[action].map(f => clean($(`shop_${f.name}`).value)).filter(Boolean);
+    $('shopCommand').textContent = `/shop ${action}${args.length ? ' ' + args.join(' ') : ''}`;
+  }
+
+  $('shopAction').addEventListener('change', renderShopFields);
+
+  let supplyRows = [
+    { name:'Food', amount:0, rate:0 },
+    { name:'Consumer Goods', amount:0, rate:0 },
+    { name:'Water', amount:0, rate:0 },
+    { name:'Oxygen', amount:0, rate:0 },
+    { name:'Repair Material', amount:0, rate:0 }
+  ];
+
+  function addSupplyRow(data = {name:'New Supply', amount:0, rate:0}) {
+    supplyRows.push(data);
+    renderSupplyRows();
+  }
+
+  function removeSupplyRow(index) {
+    supplyRows.splice(index, 1);
+    renderSupplyRows();
+  }
+
+  function renderSupplyRows() {
+    $('supplyRows').innerHTML = supplyRows.map((row, i) => `
+      <div class="supply-row">
+        <div class="field">
+          <label>Supply name</label>
+          <input value="${escapeHtml(row.name)}" oninput="supplyRows[${i}].name=this.value; calculateUpkeep()" />
+        </div>
+        <div class="field">
+          <label>Current amount</label>
+          <input type="number" min="0" step="any" value="${row.amount}" oninput="supplyRows[${i}].amount=Number(this.value); calculateUpkeep()" />
+        </div>
+        <div class="field">
+          <label>Daily use</label>
+          <input type="number" min="0" step="any" value="${row.rate}" oninput="supplyRows[${i}].rate=Number(this.value); calculateUpkeep()" />
+        </div>
+        <div class="field">
+          <label>Time remaining</label>
+          <div class="supply-result" id="remaining_${i}">—</div>
+        </div>
+        <div class="field">
+          <label>Estimated empty time</label>
+          <div class="supply-result" id="empty_${i}">—</div>
+        </div>
+        <button class="btn danger" onclick="removeSupplyRow(${i})">Remove</button>
+      </div>
+    `).join('');
+    calculateUpkeep();
+  }
+
+  function formatDuration(ms) {
+    if (!isFinite(ms) || ms < 0) return '—';
+    const totalHours = Math.floor(ms / 3600000);
+    const days = Math.floor(totalHours / 24);
+    const hours = totalHours % 24;
+    const minutes = Math.floor((ms % 3600000) / 60000);
+    return `${days}d ${hours}h ${minutes}m`;
+  }
+
+  function calculateUpkeep() {
+    const snapshot = JSON.parse(localStorage.getItem('dgcUpkeepSnapshot') || 'null');
+    const now = Date.now();
+    const started = snapshot ? new Date(snapshot.time).getTime() : now;
+    const elapsedDays = Math.max(0, (now - started) / 86400000);
+    const low = Number($('warningThreshold').value || 3);
+    const critical = Number($('criticalThreshold').value || 1);
+    $('thresholdReadout').textContent = low;
+
+    let soonest = null;
+
+    supplyRows.forEach((row, i) => {
+      const startAmount = snapshot?.rows?.[i]?.amount ?? Number(row.amount || 0);
+      const rate = Number(row.rate || 0);
+      const remainingAmount = Math.max(0, startAmount - (rate * elapsedDays));
+      const daysLeft = rate > 0 ? remainingAmount / rate : Infinity;
+      const emptyTime = isFinite(daysLeft) ? new Date(now + daysLeft * 86400000) : null;
+
+      let status = 'healthy';
+      let statusText = 'Healthy';
+      if (daysLeft <= critical) { status = 'critical'; statusText = 'Critical'; }
+      else if (daysLeft <= low) { status = 'low'; statusText = 'Low'; }
+
+      const remainingEl = $(`remaining_${i}`);
+      const emptyEl = $(`empty_${i}`);
+      if (remainingEl) remainingEl.innerHTML = rate > 0
+        ? `<b>${formatDuration(daysLeft * 86400000)}</b><span class="badge ${status}">${statusText}</span>`
+        : '<span class="muted">Set daily rate</span>';
+
+      if (emptyEl) emptyEl.textContent = emptyTime
+        ? emptyTime.toLocaleString()
+        : 'No depletion rate';
+
+      if (rate > 0 && (!soonest || emptyTime < soonest.time)) {
+        soonest = { name: row.name, time: emptyTime, ms: daysLeft * 86400000 };
+      }
+    });
+
+    $('trackingStarted').textContent = snapshot ? new Date(snapshot.time).toLocaleString() : 'Not saved';
+    $('firstOut').textContent = soonest ? soonest.name : '—';
+    $('firstOutCountdown').textContent = soonest ? formatDuration(soonest.ms) : '—';
+  }
+
+  function saveUpkeepSnapshot() {
+    const payload = {
+      time: new Date().toISOString(),
+      rows: supplyRows.map(r => ({ ...r }))
+    };
+    localStorage.setItem('dgcUpkeepSnapshot', JSON.stringify(payload));
+    localStorage.setItem('dgcSupplyRows', JSON.stringify(supplyRows));
+    calculateUpkeep();
+  }
+
+  function resetUpkeep() {
+    localStorage.removeItem('dgcUpkeepSnapshot');
+    localStorage.removeItem('dgcSupplyRows');
+    supplyRows = [
+      { name:'Food', amount:0, rate:0 },
+      { name:'Consumer Goods', amount:0, rate:0 },
+      { name:'Water', amount:0, rate:0 },
+      { name:'Oxygen', amount:0, rate:0 },
+      { name:'Repair Material', amount:0, rate:0 }
+    ];
+    renderSupplyRows();
+  }
+
+  function restoreUpkeep() {
+    const savedRows = JSON.parse(localStorage.getItem('dgcSupplyRows') || 'null');
+    const snapshot = JSON.parse(localStorage.getItem('dgcUpkeepSnapshot') || 'null');
+    if (savedRows) supplyRows = savedRows;
+    else if (snapshot?.rows) supplyRows = snapshot.rows;
+    renderSupplyRows();
+  }
+
+  $('warningThreshold').addEventListener('input', calculateUpkeep);
+  $('criticalThreshold').addEventListener('input', calculateUpkeep);
+  setInterval(calculateUpkeep, 30000);
+
+  updateAccessEntryMode();
+  updateAccess();
+  initBaseCommands();
+  updateBank();
+  renderShopFields();
+  restoreUpkeep();
+  renderHistory();
+  restoreApiCache();
+</script>
+</body>
+</html>
