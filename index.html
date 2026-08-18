@@ -398,15 +398,13 @@
     }
 
   
-    /* Standalone Markets package */
+    /* Standalone two-page market build */
     .nav-btn:not([data-target="commodityMarket"]):not([data-target="goodsMarket"]) {
       display: none !important;
     }
-
     section.section:not(#commodityMarket):not(#goodsMarket) {
       display: none !important;
     }
-
     #commodityMarket.section.active,
     #goodsMarket.section.active {
       display: block !important;
@@ -441,8 +439,8 @@
   <main>
     <div class="topbar">
       <div>
-        <h2>DiscoveryGC Market Console</h2>
-        <p>Live commodity and goods market analysis powered by Darkstat.</p>
+        <h2>DiscoveryGC Base Console</h2>
+        <p>Generate commands safely and estimate supply depletion from your computer time.</p>
       </div>
       <div class="clock" style="display:flex;flex-direction:column;gap:6px;min-width:245px;">
         <div id="liveClock">Loading local time…</div>
@@ -683,7 +681,7 @@
               <label>Base Types</label>
               <label style="display:flex;align-items:center;gap:10px;min-height:42px;cursor:pointer;">
                 <input id="includeNpcBases" type="checkbox" style="width:auto;" />
-                Include NPC bases and harvest sites
+                Include NPC bases
               </label>
             </div>
 
@@ -1641,14 +1639,12 @@
   function calculatePobCommodityMarketValue(pobGood) {
     const bases = Array.isArray(pobGood?.bases) ? pobGood.bases : [];
 
-    // Build entries using the exact same PoB normalization used by the
-    // detailed Producers & Consumers view.
     const normalized = bases
       .filter(baseEntry => !!baseEntry?.base)
       .map(baseEntry => normalizePobGoodEntry(pobGood, baseEntry));
 
-    // Same duplicate rules as the detailed market.
-    let rawProducers = dedupeMarketEntries(
+    // 1) Dedupe first.
+    const rawProducers = dedupeMarketEntries(
       normalized.filter(good => {
         const q = Number(good.poBGood?.quantity ?? 0);
         const min = Number(good.poBGood?.min_stock ?? 0);
@@ -1657,7 +1653,7 @@
       'producer'
     );
 
-    let rawConsumers = dedupeMarketEntries(
+    const rawConsumers = dedupeMarketEntries(
       normalized.filter(good => {
         const q = Number(good.poBGood?.quantity ?? 0);
         const max = Number(good.poBGood?.max_stock ?? 0);
@@ -1666,43 +1662,56 @@
       'consumer'
     );
 
-    // Same netting rule as the detailed market.
-    {
-      const netted = netDualRoleMarketEntries(rawProducers, rawConsumers);
-      rawProducers = netted.producers;
-      rawConsumers = netted.consumers;
+    function localMedian(values) {
+      const nums = values
+        .filter(Number.isFinite)
+        .sort((a, b) => a - b);
+
+      if (!nums.length) return null;
+
+      const mid = Math.floor(nums.length / 2);
+      return nums.length % 2
+        ? nums[mid]
+        : (nums[mid - 1] + nums[mid]) / 2;
     }
 
-    // Same median-price rule as the detailed market:
-    // remove consumers paying below the median.
-    const prices = rawConsumers
-      .map(good => marketPrice(good.poBGood?.sell_price))
-      .filter(v => v !== null)
-      .sort((a, b) => a - b);
+    // 2) Apply the same producer and consumer median-price filters
+    // used by the detailed market.
+    const producerMedian = localMedian(
+      rawProducers
+        .map(good => marketPrice(good.poBGood?.price))
+        .filter(v => v !== null)
+    );
 
-    let consumerMedian = null;
-    if (prices.length) {
-      const mid = Math.floor(prices.length / 2);
-      consumerMedian = prices.length % 2
-        ? prices[mid]
-        : (prices[mid - 1] + prices[mid]) / 2;
-    }
+    const consumerMedian = localMedian(
+      rawConsumers
+        .map(good => marketPrice(good.poBGood?.sell_price))
+        .filter(v => v !== null)
+    );
 
-    const consumers = rawConsumers.filter(good => {
+    let producers = rawProducers.filter(good => {
+      const price = marketPrice(good.poBGood?.price);
+      return producerMedian === null ||
+        (price !== null && price <= producerMedian);
+    });
+
+    let consumers = rawConsumers.filter(good => {
       const price = marketPrice(good.poBGood?.sell_price);
 
-      if (!(consumerMedian === null || (price !== null && price >= consumerMedian))) {
+      if (!(
+        consumerMedian === null ||
+        (price !== null && price >= consumerMedian)
+      )) {
         return false;
       }
 
+      // 3) Apply consumer liquidity/funds filter BEFORE netting.
       const quantity = good.poBGood?.quantity;
       const maxStock = good.poBGood?.max_stock;
       const funds = Number.isFinite(Number(good.funds_available))
         ? Number(good.funds_available)
         : null;
 
-      // Same liquidity rule as the detailed market:
-      // funds must be strictly greater than 5% of this entry's market value.
       if (
         funds === null ||
         price === null ||
@@ -1712,12 +1721,24 @@
         return true;
       }
 
-      const emptyStock = Math.max(0, Number(maxStock) - Number(quantity));
+      const emptyStock = Math.max(
+        0,
+        Number(maxStock) - Number(quantity)
+      );
       const entryMarketValue = emptyStock * price;
+
       return funds > (entryMarketValue * 0.05);
     });
 
-    const producerValue = rawProducers.reduce(
+    // 4) Only now net stations that survived on BOTH sides.
+    {
+      const netted = netDualRoleMarketEntries(producers, consumers);
+      producers = netted.producers;
+      consumers = netted.consumers;
+    }
+
+    // 5) Totals use the adjusted/net values.
+    const producerValue = producers.reduce(
       (sum, good) => sum + producerEntryMarketValue(good),
       0
     );
@@ -1733,7 +1754,6 @@
       totalValue: consumerValue
     };
   }
-
 
   function renderTopCommodityMarkets() {
     const container = $('topCommodityMarkets');
@@ -2037,14 +2057,6 @@
         'consumer'
       );
 
-      // Net producer and consumer market value for stations that do both.
-      // The smaller side is removed; the surviving side keeps only the difference.
-      {
-        const netted = netDualRoleMarketEntries(rawProducers, rawConsumers);
-        rawProducers = netted.producers;
-        rawConsumers = netted.consumers;
-      }
-
       function median(values) {
         const nums = values.filter(Number.isFinite).sort((a,b) => a-b);
         if (!nums.length) return null;
@@ -2060,7 +2072,7 @@
         marketPrice(good.price_base_buys_for) ?? marketPrice(good.poBGood?.sell_price)
       ).filter(v => v !== null));
 
-      const producers = rawProducers
+      let producers = rawProducers
         .filter(good => {
           const price = marketPrice(good.price_base_sells_for) ?? marketPrice(good.poBGood?.price);
           return producerMedian === null || (price !== null && price <= producerMedian);
@@ -2069,7 +2081,7 @@
           producerEntryMarketValue(b) - producerEntryMarketValue(a)
         );
 
-      const consumers = rawConsumers
+      let consumers = rawConsumers
         .filter(good => {
           const price = marketPrice(good.price_base_buys_for) ?? marketPrice(good.poBGood?.sell_price);
           if (!(consumerMedian === null || (price !== null && price >= consumerMedian))) return false;
@@ -2091,6 +2103,17 @@
         .sort((a, b) =>
           consumerEntryMarketValue(b) - consumerEntryMarketValue(a)
         );
+
+      // Apply producer/consumer netting only AFTER all eligibility filters.
+      // This prevents a filtered-out consumer from erasing a legitimate producer
+      // (and vice versa). The surviving side keeps only the net market value.
+      {
+        const netted = netDualRoleMarketEntries(producers, consumers);
+        producers = netted.producers
+          .sort((a, b) => producerEntryMarketValue(b) - producerEntryMarketValue(a));
+        consumers = netted.consumers
+          .sort((a, b) => consumerEntryMarketValue(b) - consumerEntryMarketValue(a));
+      }
 
       producerCountEl.textContent =
         `${producers.length.toLocaleString()} result${producers.length === 1 ? '' : 's'}`;
