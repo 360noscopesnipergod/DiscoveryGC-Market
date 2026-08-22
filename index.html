@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>DiscoveryGC Markets</title>
   <style>
+
     :root {
       --bg: #0d1020;
       --panel: #171a30;
@@ -399,48 +400,49 @@
 
   
     /* Standalone two-page market build */
-    .nav-btn:not([data-target="commodityMarket"]):not([data-target="goodsMarket"]) {
+    .nav-btn:not([data-target="commodityMarket"]):not([data-target="goodsMarket"]):not([data-target="regionalEconomy"]) {
       display: none !important;
     }
-    section.section:not(#commodityMarket):not(#goodsMarket) {
+    section.section:not(#commodityMarket):not(#goodsMarket):not(#regionalEconomy) {
       display: none !important;
     }
     #commodityMarket.section.active,
-    #goodsMarket.section.active {
+    #goodsMarket.section.active,
+    #regionalEconomy.section.active {
       display: block !important;
     }
 
-  </style>
+  
+  
+    @media (max-width: 980px) {
+      #commodityMarket .grid > .card,
+      #goodsMarket .grid > .card {
+        grid-column: 1 / -1 !important;
+        grid-row: auto !important;
+      }
+    }
+
+</style>
 </head>
 <body>
 <div class="app">
-  <aside>
+  <aside class="sidebar">
     <div class="brand">
-      <div class="brand-mark">DG</div>
-      <div>
-        <h1>DiscoveryGC Markets</h1>
-        <p>Commodity & goods market dashboard</p>
-      </div>
+      <h1>DiscoveryGC Markets</h1>
+      <p>Commodity & goods market dashboard</p>
     </div>
-
-    <div class="nav-wrap">
-      <button class="nav-btn" data-target="access">Access</button>
-      <button class="nav-btn" data-target="base">Base Commands</button>
-      <button class="nav-btn" data-target="bank">Bank</button>
-      <button class="nav-btn" data-target="shop">Shop</button>
-      <button class="nav-btn" data-target="upkeep">Upkeep Tracker</button>
+    <nav class="nav">
       <button class="nav-btn active" data-target="commodityMarket">Commodity Market</button>
       <button class="nav-btn" data-target="goodsMarket">Goods Market</button>
-      <button class="nav-btn" data-target="liveData">Live API Data</button>
-      <button class="nav-btn" data-target="history">Command History</button>
-    </div>
+      <button class="nav-btn" data-target="regionalEconomy">Global Economy</button>
+    </nav>
   </aside>
 
-  <main>
+  <main class="main">
     <div class="topbar">
       <div>
-        <h2>DiscoveryGC Market</h2>
-        <p>Disco Global Market plz send credits to /givecash donnel_bank 1trillion credits :D</p>
+        <h2>DiscoveryGC Market Console</h2>
+        <p>Live market analysis powered by Darkstat.</p>
       </div>
       <div class="clock" style="display:flex;flex-direction:column;gap:6px;min-width:245px;">
         <div id="liveClock">Loading local time…</div>
@@ -454,217 +456,25 @@
       </div>
     </div>
 
-    <section id="access" class="section">
+<section id="commodityMarket" class="section active">
       <div class="grid">
-        <div class="card span-7">
-          <h3>Access Command</h3>
-          <div class="sub">Add or remove access for a name, faction, or tag.</div>
-
-          <div class="form-grid">
-            <div class="field">
-              <label for="accessAction">Action</label>
-              <select id="accessAction">
-                <option value="add">Add</option>
-                <option value="remove">Remove</option>
-                <option value="list">List Entries</option>
-              </select>
-            </div>
-
-            <div class="field" id="accessTargetWrap">
-              <label for="accessTarget">Target type</label>
-              <select id="accessTarget">
-                <option value="name">Name</option>
-                <option value="faction">Faction</option>
-                <option value="tag">Tag</option>
-              </select>
-            </div>
-
-            <div class="field">
-              <label for="accessList">Access list</label>
-              <select id="accessList">
-                <option value="whitelist">Whitelist</option>
-                <option value="blacklist">Blacklist</option>
-                <option value="hostile">Hostile</option>
-                <option value="nodock">No Dock</option>
-                <option value="srp">SRP</option>
-              </select>
-            </div>
-
-            <div class="field" id="accessEntryWrap">
-              <label for="accessEntry" id="accessEntryLabel">Player Name</label>
-              <div class="combo" id="accessEntryCombo">
-                <input id="accessEntry" value="kishiro" autocomplete="off" placeholder="e.g. kishiro or WannabePirate03" />
-                <div class="combo-menu" id="accessEntryMenu"></div>
-              </div>
-              <div class="entry-hint" id="accessEntryHint">Free-text entry.</div>
-            </div>
-          </div>
-
-          <div class="command-box" id="accessCommand"></div>
-          <div class="actions">
-            <button class="btn primary" onclick="copyCommand('accessCommand')">Copy Command</button>
-            <button class="btn secondary" onclick="saveCommand('accessCommand')">Save to History</button>
+        <div class="card" style="grid-column:1 / -1; grid-row:1; padding:12px 14px;">
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+            <b>Regions</b>
+            <button type="button" id="marketGlobalRegionButton" class="btn primary" style="padding:6px 10px;" onclick="toggleGlobalMarketRegions()">Global</button>
+            <div id="marketRegionButtons" style="display:flex;gap:6px;flex-wrap:wrap;"></div>
           </div>
         </div>
 
-        <div class="card span-5">
-          <h3>Examples</h3>
-          <div class="sub">Click an example to load it.</div>
-          <div class="history-list">
-            <div class="history-item" onclick="loadAccess('add','faction','whitelist','kishiro')">/access add faction whitelist kishiro</div>
-            <div class="history-item" onclick="loadAccess('add','name','blacklist','WannabePirate03')">/access add name blacklist WannabePirate03</div>
-            <div class="history-item" onclick="loadAccess('remove','faction','whitelist','kishiro')">/access remove faction whitelist kishiro</div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section id="base" class="section">
-      <div class="grid">
-        <div class="card span-8">
-          <h3>Base Command Builder</h3>
-          <div class="sub">First draft covering commands visible in your screenshots.</div>
-
-          <div class="form-grid">
-            <div class="field full">
-              <label for="baseCommandSelect">Command</label>
-              <select id="baseCommandSelect"></select>
-            </div>
-            <div id="baseDynamicFields" class="field full"></div>
-          </div>
-
-          <div class="command-box" id="baseCommand"></div>
-          <div class="actions">
-            <button class="btn primary" onclick="copyCommand('baseCommand')">Copy Command</button>
-            <button class="btn secondary" onclick="saveCommand('baseCommand')">Save to History</button>
-          </div>
-        </div>
-
-        <div class="card span-4">
-          <h3>Description</h3>
-          <div id="baseDescription" class="muted">Select a command to view details.</div>
-        </div>
-      </div>
-    </section>
-
-    <section id="bank" class="section">
-      <div class="grid">
-        <div class="card span-7">
-          <h3>Bank Command</h3>
-          <div class="sub">Withdraw, deposit, or check current bank status.</div>
-
-          <div class="form-grid">
-            <div class="field">
-              <label for="bankAction">Action</label>
-              <select id="bankAction">
-                <option value="withdraw">Withdraw</option>
-                <option value="deposit">Deposit</option>
-                <option value="status">Status</option>
-              </select>
-            </div>
-            <div class="field" id="bankCreditsWrap">
-              <label for="bankCredits">Credits</label>
-              <input id="bankCredits" type="number" min="0" value="100000" />
-            </div>
-          </div>
-
-          <div class="command-box" id="bankCommand"></div>
-          <div class="actions">
-            <button class="btn primary" onclick="copyCommand('bankCommand')">Copy Command</button>
-            <button class="btn secondary" onclick="saveCommand('bankCommand')">Save to History</button>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section id="shop" class="section">
-      <div class="grid">
-        <div class="card span-8">
-          <h3>Shop Command Builder</h3>
-          <div class="sub">Pricing, stock limits, pinning, visibility, and cargo setup.</div>
-
-          <div class="form-grid">
-            <div class="field full">
-              <label for="shopAction">Shop action</label>
-              <select id="shopAction">
-                <option value="price">Set Price</option>
-                <option value="stock">Set Stock Limits</option>
-                <option value="remove">Remove Item</option>
-                <option value="pin">Pin Item</option>
-                <option value="unpin">Unpin Item</option>
-                <option value="public">Make Public</option>
-                <option value="private">Make Private</option>
-                <option value="addcargo">Add Cargo</option>
-                <option value="page">View Stock Page</option>
-              </select>
-            </div>
-            <div id="shopDynamicFields" class="field full"></div>
-          </div>
-
-          <div class="command-box" id="shopCommand"></div>
-          <div class="actions">
-            <button class="btn primary" onclick="copyCommand('shopCommand')">Copy Command</button>
-            <button class="btn secondary" onclick="saveCommand('shopCommand')">Save to History</button>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section id="upkeep" class="section">
-      <div class="grid">
-        <div class="card span-12">
-          <h3>Upkeep Tracker</h3>
-          <div class="sub">Enter current amounts and verified daily consumption rates. The tracker estimates the depletion time using your computer's local clock.</div>
-
-          <div class="notice">
-            Consumption rates are editable because the exact website upkeep table has not yet been verified from screenshots. Enter the official daily rates when you provide them.
-          </div>
-
-          <div class="status-grid">
-            <div class="metric"><span>Tracking started</span><strong id="trackingStarted">Not saved</strong></div>
-            <div class="metric"><span>First resource out</span><strong id="firstOut">—</strong></div>
-            <div class="metric"><span>Time remaining</span><strong id="firstOutCountdown">—</strong></div>
-            <div class="metric"><span>Warning threshold</span><strong><span id="thresholdReadout">3</span> days</strong></div>
-          </div>
-
-          <div class="form-grid" style="margin-bottom:16px;">
-            <div class="field">
-              <label for="warningThreshold">Low-supply warning threshold (days)</label>
-              <input id="warningThreshold" type="number" min="0" step="0.5" value="3" />
-            </div>
-            <div class="field">
-              <label for="criticalThreshold">Critical threshold (days)</label>
-              <input id="criticalThreshold" type="number" min="0" step="0.25" value="1" />
-            </div>
-          </div>
-
-          <div id="supplyRows"></div>
-
-          <div class="actions">
-            <button class="btn primary" onclick="saveUpkeepSnapshot()">Update Supplies & Timestamp</button>
-            <button class="btn secondary" onclick="addSupplyRow()">Add Supply Type</button>
-            <button class="btn danger" onclick="resetUpkeep()">Reset Tracker</button>
-          </div>
-
-          <p class="small muted" style="margin-top:14px;">
-            The saved timestamp and supply values are stored only in this browser using localStorage.
-          </p>
-        </div>
-      </div>
-    </section>
-
-
-    <section id="commodityMarket" class="section active">
-      <div class="grid">
-        <div class="card" style="grid-column:1 / span 4; grid-row:1 / span 2; align-self:start;">
-          <h3>Global Commodity Market <span id="globalCommodityMarketValue" class="small muted" style="font-weight:500;margin-left:8px;"></span></h3>
+        <div class="card" style="grid-column:1 / span 4; grid-row:2 / span 2; align-self:start;">
+          <h3 id="commodityMarketTitle">Global Commodity Market <span id="globalCommodityMarketValue" class="small muted" style="font-weight:500;margin-left:8px;"></span></h3>
           
           <div id="topCommodityMarkets" class="history-list" style="max-height:680px;">
             <div class="muted">Refresh Market Data to calculate rankings.</div>
           </div>
         </div>
 
-        <div class="card" style="grid-column:5 / span 8;">
+        <div class="card" style="grid-column:5 / span 8; grid-row:2;">
           <h3>Commodity Producers & Consumers</h3>
 
           <div class="form-grid">
@@ -681,7 +491,7 @@
               <label>Base Types</label>
               <label style="display:flex;align-items:center;gap:10px;min-height:42px;cursor:pointer;">
                 <input id="includeNpcBases" type="checkbox" style="width:auto;" />
-                Include NPC bases and Harvest Locations
+                Include NPC bases
               </label>
             </div>
 
@@ -705,7 +515,7 @@
           </div>
         </div>
 
-        <div class="card" style="grid-column:5 / span 4;">
+        <div class="card" style="grid-column:5 / span 4; grid-row:3;">
           <h3>Global Producer <span id="commodityProducerTotalTitle" class="small muted" style="font-weight:500;margin-left:8px;"></span></h3>
           
           <div id="commodityProducerCount" class="small muted" style="margin-bottom:10px;">0 results</div>
@@ -714,7 +524,7 @@
           </div>
         </div>
 
-        <div class="card" style="grid-column:9 / span 4;">
+        <div class="card" style="grid-column:9 / span 4; grid-row:3;">
           <h3>Global Consumer <span id="commodityConsumerTotalTitle" class="small muted" style="font-weight:500;margin-left:8px;"></span></h3>
           
           <div id="commodityConsumerCount" class="small muted" style="margin-bottom:10px;">0 results</div>
@@ -725,17 +535,26 @@
       </div>
     </section>
 
-    <section id="goodsMarket" class="section">
+    
+<section id="goodsMarket" class="section">
       <div class="grid">
-        <div class="card" style="grid-column:1 / span 4; grid-row:1 / span 2; align-self:start;">
-          <h3>Global Goods Market <span id="globalGoodsMarketValue" class="small muted" style="font-weight:500;margin-left:8px;"></span></h3>
+        <div class="card" style="grid-column:1 / -1; grid-row:1; padding:12px 14px;">
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+            <b>Regions</b>
+            <button type="button" id="marketGlobalRegionButtonGoods" class="btn primary" style="padding:6px 10px;" onclick="toggleGlobalMarketRegions()">Global</button>
+            <div id="marketRegionButtonsGoods" style="display:flex;gap:6px;flex-wrap:wrap;"></div>
+          </div>
+        </div>
+
+        <div class="card" style="grid-column:1 / span 4; grid-row:2 / span 2; align-self:start;">
+          <h3 id="goodsMarketTitle">Global Goods Market <span id="globalGoodsMarketValue" class="small muted" style="font-weight:500;margin-left:8px;"></span></h3>
           
           <div id="topGoodsMarkets" class="history-list" style="max-height:680px;">
             <div class="muted">Refresh Market Data to calculate rankings.</div>
           </div>
         </div>
 
-        <div class="card" style="grid-column:5 / span 8;">
+        <div class="card" style="grid-column:5 / span 8; grid-row:2;">
           <h3>Goods Producers & Consumers</h3>
 
           <div class="form-grid">
@@ -773,7 +592,7 @@
           </div>
         </div>
 
-        <div class="card" style="grid-column:5 / span 4;">
+        <div class="card" style="grid-column:5 / span 4; grid-row:3;">
           <h3>Global Producer <span id="goodsProducerTotalTitle" class="small muted" style="font-weight:500;margin-left:8px;"></span></h3>
           
           <div id="goodsProducerCount" class="small muted" style="margin-bottom:10px;">0 results</div>
@@ -782,7 +601,7 @@
           </div>
         </div>
 
-        <div class="card" style="grid-column:9 / span 4;">
+        <div class="card" style="grid-column:9 / span 4; grid-row:3;">
           <h3>Global Consumer <span id="goodsConsumerTotalTitle" class="small muted" style="font-weight:500;margin-left:8px;"></span></h3>
           
           <div id="goodsConsumerCount" class="small muted" style="margin-bottom:10px;">0 results</div>
@@ -793,58 +612,68 @@
       </div>
     </section>
 
-    <section id="liveData" class="section">
+    
+
+
+    <section id="regionalEconomy" class="section">
       <div class="grid">
         <div class="card span-12">
-          <h3>Darkstat API Connection</h3>
-          <div class="sub">Load current DiscoveryGC factions, commodities, systems, and public player-owned bases.</div>
-          <div class="status-grid">
-            <div class="metric"><span>Connection</span><strong id="apiConnection">Not tested</strong></div>
-            <div class="metric"><span>Factions</span><strong id="apiFactionCount">Fallback list</strong></div>
-            <div class="metric"><span>Commodities</span><strong id="apiCommodityCount">Not loaded</strong></div>
-            <div class="metric"><span>Public PoBs</span><strong id="apiPobCount">Not loaded</strong></div>
+          <h3>Global Economy</h3>
+          <div class="actions" style="margin-top:0;">
+            <button class="btn secondary" type="button" onclick="refreshRegionalEconomy()">Refresh Global Economy</button>
           </div>
-          <div class="actions">
-            <button class="btn primary" onclick="loadFactionData()">Refresh Factions</button>
-            <button class="btn primary" onclick="loadCommodityData()">Refresh Commodities</button>
-            <button class="btn primary" onclick="loadSystemData()">Refresh Systems</button>
-            <button class="btn primary" onclick="loadPobData()">Refresh Public PoBs</button>
-            <button class="btn secondary" onclick="testApiConnection()">Test Connection</button>
-            <button class="btn danger" onclick="clearApiCache()">Clear API Cache</button>
+          <div id="regionalEconomySummary" class="notice" style="margin-top:14px;">
+            Refresh Market Data first, then open this page.
           </div>
-          <div class="notice" id="apiNotice" style="margin-top:16px;">Each dataset is refreshed independently. Use only the data you need; built-in faction suggestions remain available as a fallback.</div>
         </div>
-        <div class="card span-6">
-          <h3>Public Player-Owned Bases</h3>
-          <div class="sub">Search the public PoB data returned by Darkstat.</div>
-          <div class="field"><label for="pobSearch">Search by base, faction, system, or region</label><input id="pobSearch" placeholder="Start typing…" oninput="renderPobs()" /></div>
-          <div id="pobList" class="history-list" style="margin-top:14px;"></div>
-        </div>
-        <div class="card span-6">
-          <h3>API Data Summary</h3>
-          <div class="sub">The command generator remains read-only. API data is used only for suggestions and display.</div>
-          <div id="apiSummary" class="history-list"><div class="muted">Refresh live data to populate this section.</div></div>
+
+        <div class="card span-12">
+          <h3>Regional GDP</h3>
+          <div id="regionalEconomyList" class="history-list">
+            <div class="muted">No GDP data loaded.</div>
+          </div>
         </div>
       </div>
     </section>
 
-    <section id="history" class="section">
-      <div class="grid">
-        <div class="card span-8">
-          <h3>Command History</h3>
-          <div class="sub">Commands saved in this browser. Click one to copy it.</div>
-          <div id="historyList" class="history-list"></div>
-          <div class="actions">
-            <button class="btn danger" onclick="clearHistory()">Clear History</button>
-          </div>
-        </div>
-      </div>
-    </section>
+    <div id="compat" style="display:none" aria-hidden="true">
+  <input id="accessAction" value="" />
+  <input id="accessCommand" value="" />
+  <input id="accessEntry" value="" />
+  <input id="accessEntryCombo" value="" />
+  <input id="accessEntryHint" value="" />
+  <input id="accessEntryLabel" value="" />
+  <input id="accessEntryMenu" value="" />
+  <input id="accessEntryWrap" value="" />
+  <input id="accessList" value="" />
+  <input id="accessTarget" value="" />
+  <input id="accessTargetWrap" value="" />
+  <input id="bankAction" value="" />
+  <input id="bankCommand" value="" />
+  <input id="bankCredits" value="" />
+  <input id="bankCreditsWrap" value="" />
+  <input id="baseCommand" value="" />
+  <input id="baseCommandSelect" value="" />
+  <input id="baseDescription" value="" />
+  <input id="baseDynamicFields" value="" />
+  <input id="criticalThreshold" value="" />
+  <input id="firstOut" value="" />
+  <input id="firstOutCountdown" value="" />
+  <input id="historyList" value="" />
+  <input id="shopAction" value="" />
+  <input id="shopCommand" value="" />
+  <input id="shopDynamicFields" value="" />
+  <input id="supplyRows" value="" />
+  <input id="thresholdReadout" value="" />
+  <input id="trackingStarted" value="" />
+  <input id="warningThreshold" value="" />
+</div>
+    <datalist id="commoditySuggestions"></datalist>
   </main>
 </div>
-<datalist id="commoditySuggestions"></datalist>
 
 <script>
+
   const $ = (id) => document.getElementById(id);
 
   let clockIndexHours = 0;
@@ -930,7 +759,7 @@
     const history = getHistory();
     history.unshift({ command, time: new Date().toISOString() });
     localStorage.setItem('dgcCommandHistory', JSON.stringify(history));
-    renderHistory();
+
   }
 
   function renderHistory() {
@@ -949,7 +778,7 @@
 
   function clearHistory() {
     localStorage.removeItem('dgcCommandHistory');
-    renderHistory();
+
   }
 
   function escapeHtml(str) {
@@ -1210,6 +1039,348 @@
     ) || null;
   }
 
+
+  let excludedMarketRegions = new Set();
+
+  function marketRegionOf(good) {
+    return clean(
+      good?.region_name ||
+      good?.poB?.region_name ||
+      good?.raw?.region_name ||
+      ''
+    ) || 'Location unavailable';
+  }
+
+  function collectMarketRegionsFromPobGoods() {
+    const regions = new Set();
+
+    for (const item of (Array.isArray(pobGoodsCache) ? pobGoodsCache : [])) {
+      for (const baseEntry of (Array.isArray(item?.bases) ? item.bases : [])) {
+        const normalized = normalizePobGoodEntry(item, baseEntry);
+        const region = marketRegionOf(normalized);
+        regions.add(region);
+      }
+    }
+
+    return [...regions].sort((a, b) => a.localeCompare(b));
+  }
+
+  function marketRegionIncluded(good) {
+    const region = marketRegionOf(good);
+    return !excludedMarketRegions.has(region);
+  }
+
+  function marketScopeLabel() {
+    const regions = collectMarketRegionsFromPobGoods();
+    const enabledCount = Math.max(0, regions.length - excludedMarketRegions.size);
+
+    // All regions enabled (including initial state) = Global.
+    if (!regions.length || enabledCount === regions.length) return 'Global';
+
+    // Zero or exactly one included region = Regional.
+    // With zero regions the market is empty until a region is toggled back on.
+    if (enabledCount <= 1) return 'Regional';
+
+    // Two or more, but not all, = Inter-Regional.
+    return 'Inter-Regional';
+  }
+
+  function updateMarketScopeTitles() {
+    const scope = marketScopeLabel();
+
+    const replacements = [
+      ['commodityMarketTitle', `${scope} Commodity Market`],
+      ['goodsMarketTitle', `${scope} Goods Market`],
+      ['producerMarketTitle', `${scope} Producer`],
+      ['consumerMarketTitle', `${scope} Consumer`],
+      ['goodsProducerMarketTitle', `${scope} Producer`],
+      ['goodsConsumerMarketTitle', `${scope} Consumer`]
+    ];
+
+    for (const [id, title] of replacements) {
+      const el = $(id);
+      if (el) {
+        // Preserve any live value span/child nodes by replacing only the first text node.
+        const textNode = [...el.childNodes].find(n => n.nodeType === Node.TEXT_NODE);
+        if (textNode) textNode.nodeValue = title + ' ';
+        else el.insertBefore(document.createTextNode(title + ' '), el.firstChild);
+      }
+    }
+
+    // Fallback for builds whose headings do not have IDs:
+    document.querySelectorAll('#commodityMarket h2, #commodityMarket h3, #goodsMarket h2, #goodsMarket h3').forEach(el => {
+      const raw = (el.textContent || '').trim();
+      let base = null;
+
+      if (/^(Global |Regional |Inter-Regional )?Commodity Market\b/i.test(raw)) base = 'Commodity Market';
+      else if (/^(Global |Regional |Inter-Regional )?Goods Market\b/i.test(raw)) base = 'Goods Market';
+      else if (/^(Global |Regional |Inter-Regional )?Producer\b/i.test(raw)) base = 'Producer';
+      else if (/^(Global |Regional |Inter-Regional )?Consumer\b/i.test(raw)) base = 'Consumer';
+
+      if (!base) return;
+
+      const prefix = raw.match(/(\$[\d,.]+.*)$/);
+      const newLead = `${scope} ${base}`;
+      if (prefix) {
+        const textNode = [...el.childNodes].find(n => n.nodeType === Node.TEXT_NODE);
+        if (textNode) textNode.nodeValue = newLead + ' ';
+      } else if (el.children.length === 0) {
+        el.textContent = newLead;
+      } else {
+        const textNode = [...el.childNodes].find(n => n.nodeType === Node.TEXT_NODE);
+        if (textNode) textNode.nodeValue = newLead + ' ';
+      }
+    });
+  }
+
+  function calculateRegionalGDPs() {
+    const regionalGDP = new Map();
+
+    if (!Array.isArray(pobGoodsCache) || !pobGoodsCache.length) {
+      return regionalGDP;
+    }
+
+    // Merge duplicate PoB-good records by nickname before clearing, so the
+    // same market item cannot be counted twice simply because Darkstat
+    // returned multiple records for it.
+    const goodsByNickname = new Map();
+
+    for (const item of pobGoodsCache) {
+      if (isExcludedMarketCommodity(item)) continue;
+
+      const nickname = clean(item.nickname || item.name).toLowerCase();
+      if (!nickname) continue;
+
+      if (!goodsByNickname.has(nickname)) {
+        goodsByNickname.set(nickname, {
+          name: item.name,
+          nickname: item.nickname,
+          bases: []
+        });
+      }
+
+      const merged = goodsByNickname.get(nickname);
+      if (Array.isArray(item.bases)) {
+        merged.bases.push(...item.bases);
+      }
+    }
+
+    for (const mergedGood of goodsByNickname.values()) {
+      const normalized = mergedGood.bases
+        .filter(baseEntry => !!baseEntry?.base)
+        .map(baseEntry => normalizePobGoodEntry(mergedGood, baseEntry));
+
+      // Same base/item duplicate handling as the live market.
+      let producers = dedupeMarketEntries(
+        normalized.filter(good => {
+          const q = Number(good.poBGood?.quantity ?? 0);
+          const min = Number(good.poBGood?.min_stock ?? 0);
+          return marketPrice(good.poBGood?.price) !== null && q > min;
+        }),
+        'producer'
+      );
+
+      let consumers = dedupeMarketEntries(
+        normalized.filter(good => {
+          const q = Number(good.poBGood?.quantity ?? 0);
+          const max = Number(good.poBGood?.max_stock ?? 0);
+          return marketPrice(good.poBGood?.sell_price) !== null && q < max;
+        }),
+        'consumer'
+      );
+
+      // Price-based importer/exporter classification.
+      const classified = netDualRoleMarketEntries(producers, consumers);
+      producers = classified.producers;
+      consumers = classified.consumers;
+
+      // ConsumerEntryMarketValue / consumerFundedUnits already cap demand
+      // by available station funds. Clear the global producer book once.
+      producers = clearProducerMarketAgainstConsumers(producers, consumers);
+
+      for (const producer of producers) {
+        const value = producerEntryMarketValue(producer);
+        if (!(value > 0)) continue;
+
+        const region = marketRegionOf(producer) || 'Location unavailable';
+        regionalGDP.set(
+          region,
+          (regionalGDP.get(region) || 0) + value
+        );
+      }
+    }
+
+    return regionalGDP;
+  }
+
+  function formatCompactMoney(value) {
+    const n = Number(value || 0);
+    const abs = Math.abs(n);
+
+    if (abs >= 1e12) return `$${(n / 1e12).toFixed(2)}T`;
+    if (abs >= 1e9) return `$${(n / 1e9).toFixed(2)}B`;
+    if (abs >= 1e6) return `$${(n / 1e6).toFixed(2)}M`;
+    if (abs >= 1e3) return `$${(n / 1e3).toFixed(2)}K`;
+    return `$${Math.round(n).toLocaleString()}`;
+  }
+
+
+  function renderRegionalEconomy() {
+    const list = $('regionalEconomyList');
+    const summary = $('regionalEconomySummary');
+    if (!list || !summary) return;
+
+    const regionalGDP = calculateRegionalGDPs();
+    const rows = [...regionalGDP.entries()]
+      .map(([region, gdp]) => ({ region, gdp: Number(gdp || 0) }))
+      .sort((a, b) => b.gdp - a.gdp);
+
+    const totalGDP = rows.reduce((sum, row) => sum + row.gdp, 0);
+
+    if (!rows.length) {
+      list.innerHTML = '<div class="muted">No GDP data available. Refresh Market Data first.</div>';
+      summary.textContent = 'No regional GDP data available.';
+      return;
+    }
+
+    summary.textContent =
+      `Global GDP: $${totalGDP.toLocaleString()} • ${rows.length.toLocaleString()} regions`;
+
+    list.innerHTML = rows.map((row, index) => {
+      const share = totalGDP > 0 ? (row.gdp / totalGDP) * 100 : 0;
+      return `
+        <div class="history-item" style="font-family:inherit;cursor:default;">
+          <div style="display:flex;justify-content:space-between;gap:14px;align-items:flex-start;">
+            <div>
+              <b>${index + 1}. ${escapeHtml(row.region)}</b>
+              <div class="small muted" style="margin-top:4px;">
+                Share of global GDP: ${share.toFixed(2)}%
+              </div>
+            </div>
+            <div style="text-align:right;">
+              <b>$${row.gdp.toLocaleString()}</b>
+              <div class="small muted">${formatCompactMoney(row.gdp)}</div>
+            </div>
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  async function refreshRegionalEconomy() {
+    if (!Array.isArray(pobGoodsCache) || !pobGoodsCache.length) {
+      const info = $('regionalEconomySummary');
+      if (info) info.textContent = 'Refreshing market data for regional GDP…';
+
+      try {
+        pobGoodsCache = await apiPost('/api/pob_goods', {}, 60000);
+        renderMarketRegionButtons();
+      } catch (error) {
+        if (info) info.textContent = `Regional GDP refresh failed: ${error.message}`;
+        return;
+      }
+    }
+
+    renderRegionalEconomy();
+  }
+
+  function renderMarketRegionButtons() {
+    const regions = collectMarketRegionsFromPobGoods();
+    const regionalGDP = calculateRegionalGDPs();
+    const globalActive = excludedMarketRegions.size === 0;
+
+    const totalGDP = [...regionalGDP.values()]
+      .reduce((sum, value) => sum + Number(value || 0), 0);
+
+    for (const globalButton of [
+      $('marketGlobalRegionButton'),
+      $('marketGlobalRegionButtonGoods')
+    ]) {
+      if (!globalButton) continue;
+      globalButton.classList.toggle('primary', globalActive);
+      globalButton.classList.toggle('secondary', !globalActive);
+      globalButton.textContent = 'Global';
+    }
+
+    const renderInto = container => {
+      if (!container) return;
+
+      if (!regions.length) {
+        container.innerHTML = '<span class="small muted">Refresh Market Data to load regions.</span>';
+        return;
+      }
+
+      container.innerHTML = regions.map(region => {
+        const active = !excludedMarketRegions.has(region);
+        return `
+          <button type="button"
+                  class="btn ${active ? 'primary' : 'secondary'}"
+                  style="padding:6px 10px;"
+                  data-market-region="${escapeHtml(region)}"
+                  onclick="toggleMarketRegion('${escapeHtml(region).replace(/'/g, '&#39;')}')">
+            ${escapeHtml(region)}
+          </button>`;
+      }).join('');
+    };
+
+    renderInto($('marketRegionButtons'));
+    renderInto($('marketRegionButtonsGoods'));
+    updateMarketScopeTitles();
+    renderRegionalEconomy();
+  }
+
+  async function toggleGlobalMarketRegions() {
+    const regions = collectMarketRegionsFromPobGoods();
+    const globalIsOn = excludedMarketRegions.size === 0;
+
+    if (globalIsOn) {
+      // Global ON -> OFF: turn every individual region OFF.
+      excludedMarketRegions = new Set(regions);
+    } else {
+      // Global OFF -> ON: turn every individual region ON.
+      excludedMarketRegions.clear();
+    }
+
+    renderMarketRegionButtons();
+    renderTopCommodityMarkets();
+    renderTopGoodsMarkets();
+    updateMarketScopeTitles();
+
+    const commodityInput = $('marketCommodity');
+    if (commodityInput && clean(commodityInput.value)) {
+      await lookupCommodityMarket();
+    }
+
+    const goodsInput = $('marketGood');
+    if (goodsInput && clean(goodsInput.value)) {
+      await lookupGoodsMarket();
+    }
+  }
+
+  async function toggleMarketRegion(region) {
+    if (excludedMarketRegions.has(region)) {
+      excludedMarketRegions.delete(region);
+    } else {
+      excludedMarketRegions.add(region);
+    }
+
+    renderMarketRegionButtons();
+
+    // Recalculate BOTH global markets immediately.
+    renderTopCommodityMarkets();
+    renderTopGoodsMarkets();
+
+    // Re-run the currently selected detailed market(s) immediately as well.
+    const commodityInput = $('marketCommodity');
+    if (commodityInput && clean(commodityInput.value)) {
+      await lookupCommodityMarket();
+    }
+
+    const goodsInput = $('marketGood');
+    if (goodsInput && clean(goodsInput.value)) {
+      await lookupGoodsMarket();
+    }
+  }
+
   function marketPrice(value) {
     const n = Number(value);
     return Number.isFinite(n) && n > 0 ? n : null;
@@ -1246,8 +1417,8 @@
   }
 
   function producerEntryMarketValue(good) {
-    if (Number.isFinite(Number(good._adjusted_market_value))) {
-      return Math.max(0, Number(good._adjusted_market_value));
+    if (Number.isFinite(Number(good._cleared_market_value))) {
+      return Math.max(0, Number(good._cleared_market_value));
     }
 
     const price =
@@ -1262,10 +1433,6 @@
   }
 
   function consumerEntryMarketValue(good) {
-    if (Number.isFinite(Number(good._adjusted_market_value))) {
-      return Math.max(0, Number(good._adjusted_market_value));
-    }
-
     const price =
       marketPrice(good.price_base_buys_for) ??
       marketPrice(good.poBGood?.sell_price);
@@ -1279,7 +1446,125 @@
       maxStock === undefined || maxStock === null
     ) return 0;
 
-    return Math.max(0, Number(maxStock) - Number(quantity)) * price;
+    const emptyStock = Math.max(0, Number(maxStock) - Number(quantity));
+    const theoreticalValue = emptyStock * price;
+
+    const funds = Number.isFinite(Number(good.funds_available))
+      ? Math.max(0, Number(good.funds_available))
+      : null;
+
+    return funds === null
+      ? theoreticalValue
+      : Math.min(theoreticalValue, funds);
+  }
+
+  function consumerFundedUnits(good) {
+    const price =
+      marketPrice(good.price_base_buys_for) ??
+      marketPrice(good.poBGood?.sell_price);
+
+    if (price === null || price <= 0) return 0;
+
+    const quantity = good.poBGood?.quantity;
+    const maxStock = good.poBGood?.max_stock;
+    if (
+      quantity === undefined || quantity === null ||
+      maxStock === undefined || maxStock === null
+    ) return 0;
+
+    const emptyStock = Math.max(0, Number(maxStock) - Number(quantity));
+
+    const funds = Number.isFinite(Number(good.funds_available))
+      ? Math.max(0, Number(good.funds_available))
+      : null;
+
+    if (funds === null) return emptyStock;
+
+    return Math.min(emptyStock, Math.floor(funds / price));
+  }
+
+  function clearProducerMarketAgainstConsumers(producers, consumers) {
+    // Build a demand book from surviving consumers.
+    // Highest import bid gets filled first.
+    const demandBook = consumers
+      .map(good => {
+        const importPrice =
+          marketPrice(good.price_base_buys_for) ??
+          marketPrice(good.poBGood?.sell_price);
+
+        const quantity = good.poBGood?.quantity;
+        const maxStock = good.poBGood?.max_stock;
+
+        // We need a finite quantity of demand to value the market.
+        if (
+          importPrice === null ||
+          quantity === undefined || quantity === null ||
+          maxStock === undefined || maxStock === null
+        ) {
+          return null;
+        }
+
+        return {
+          importPrice,
+          remaining: consumerFundedUnits(good)
+        };
+      })
+      .filter(Boolean)
+      .filter(order => order.remaining > 0)
+      .sort((a, b) => b.importPrice - a.importPrice);
+
+    // Lower-priced exporters clear first.
+    const sortedProducers = producers
+      .slice()
+      .sort((a, b) => {
+        const aPrice =
+          marketPrice(a.price_base_sells_for) ??
+          marketPrice(a.poBGood?.price) ??
+          Infinity;
+        const bPrice =
+          marketPrice(b.price_base_sells_for) ??
+          marketPrice(b.poBGood?.price) ??
+          Infinity;
+        return aPrice - bPrice;
+      });
+
+    for (const producer of sortedProducers) {
+      const exportPrice =
+        marketPrice(producer.price_base_sells_for) ??
+        marketPrice(producer.poBGood?.price);
+
+      const quantity = Number(producer.poBGood?.quantity ?? 0);
+      const minStock = Number(producer.poBGood?.min_stock ?? 0);
+      let remainingSupply = Math.max(0, quantity - minStock);
+
+      let clearedUnits = 0;
+      let clearedValue = 0;
+
+      if (exportPrice !== null && remainingSupply > 0) {
+        for (const order of demandBook) {
+          if (remainingSupply <= 0) break;
+
+          // Demand below the producer's export price is not economically viable.
+          // Because bids are sorted high -> low, we can stop here.
+          if (order.importPrice < exportPrice) break;
+          if (order.remaining <= 0) continue;
+
+          const matched = Math.min(remainingSupply, order.remaining);
+
+          clearedUnits += matched;
+          // Producer market value is valued at the importer's bid price.
+          clearedValue += matched * order.importPrice;
+
+          remainingSupply -= matched;
+          order.remaining -= matched;
+        }
+      }
+
+      producer._cleared_units = clearedUnits;
+      producer._cleared_market_value = clearedValue;
+    }
+
+    return sortedProducers;
   }
 
   function netDualRoleMarketEntries(producers, consumers) {
@@ -1293,21 +1578,34 @@
       const consumer = consumerMap.get(key);
       if (!consumer) continue;
 
-      const producerValue = producerEntryMarketValue(producer);
-      const consumerValue = consumerEntryMarketValue(consumer);
+      // Classify stations that both import and export the same item by PRICE,
+      // not by current stock-derived market value.
+      //
+      // Export price = what a player pays to buy from the station.
+      // Import price = what the station pays a player for the item.
+      const exportPrice =
+        marketPrice(producer.price_base_sells_for) ??
+        marketPrice(producer.poBGood?.price);
 
-      if (consumerValue > producerValue) {
-        consumer._adjusted_market_value = consumerValue - producerValue;
-        consumer._netted_value = producerValue;
-        removeProducer.add(key);
-      } else if (producerValue > consumerValue) {
-        producer._adjusted_market_value = producerValue - consumerValue;
-        producer._netted_value = consumerValue;
+      const importPrice =
+        marketPrice(consumer.price_base_buys_for) ??
+        marketPrice(consumer.poBGood?.sell_price);
+
+      if (exportPrice === null || importPrice === null) {
+        // If one side has no usable price, do not force a classification.
+        continue;
+      }
+
+      if (importPrice < exportPrice) {
+        // The station buys low and sells high: treat it as an EXPORTER.
         removeConsumer.add(key);
+      } else if (importPrice > exportPrice) {
+        // The station is willing to pay more to import than it charges to export:
+        // treat it as an IMPORTER / CONSUMER.
+        removeProducer.add(key);
       } else {
-        // Perfect cancellation leaves no external market value.
-        removeProducer.add(key);
-        removeConsumer.add(key);
+        // Equal import/export prices give no directional signal.
+        // Keep both entries rather than inventing a role.
       }
     }
 
@@ -1343,6 +1641,14 @@
       ? ` • Available: ${availableStock.toLocaleString()}`
       : '';
 
+    const clearedUnits = Number.isFinite(Number(good._cleared_units))
+      ? Number(good._cleared_units)
+      : null;
+
+    const clearedText = clearedUnits !== null
+      ? ` • Cleared: ${clearedUnits.toLocaleString()}`
+      : '';
+
     const marketSharePercent =
       marketShare !== null && overallMarketValue > 0
         ? (marketShare / overallMarketValue) * 100
@@ -1364,7 +1670,7 @@
           ${good.faction_name ? ` • ${escapeHtml(good.faction_name)}` : ''}
         </div>
         <div class="small" style="margin-top:4px;">
-          ${sellPrice !== null ? `Export: $${sellPrice.toLocaleString()}` : 'Export: —'}${stockText}
+          ${sellPrice !== null ? `Export: $${sellPrice.toLocaleString()}` : 'Export: —'}${stockText}${clearedText}
         </div>
         <div class="small" style="margin-top:4px;">
           ${valueText ? valueText.slice(3) : 'Market value: —'}${shareText}
@@ -1403,6 +1709,8 @@
       ? consumerEntryMarketValue(good)
       : null;
 
+    const fundedUnits = consumerFundedUnits(good);
+
     const marketSharePercent =
       marketValue !== null && overallMarketValue > 0
         ? (marketValue / overallMarketValue) * 100
@@ -1422,6 +1730,7 @@
         <div class="small" style="margin-top:4px;">
           ${buyPrice !== null ? `Import: $${buyPrice.toLocaleString()}` : 'Import: —'}
           ${emptyStock !== null ? ` • Empty stock: ${emptyStock.toLocaleString()}` : ''}
+          ${Number.isFinite(fundedUnits) ? ` • Funded demand: ${fundedUnits.toLocaleString()}` : ''}
         </div>
         <div class="small" style="margin-top:4px;">
           ${marketValue !== null ? `Market value: $${marketValue.toLocaleString()}` : 'Market value: —'}${marketSharePercent !== null ? ` • Market share: ${marketSharePercent.toFixed(2)}%` : ''}
@@ -1489,6 +1798,7 @@
       if (info) info.textContent = 'Refreshing player-owned station market data…';
 
       pobGoodsCache = await apiPost('/api/pob_goods', {}, 60000);
+      renderMarketRegionButtons();
       populateCommodityMarketSuggestions();
       populateGoodsMarketSuggestions();
       renderTopCommodityMarkets();
@@ -1526,6 +1836,7 @@
     try {
       if (info) info.textContent = 'Refreshing player-owned-base goods market data…';
       pobGoodsCache = await apiPost('/api/pob_goods', {}, 60000);
+      renderMarketRegionButtons();
       populateGoodsMarketSuggestions();
       renderTopGoodsMarkets();
 
@@ -1546,6 +1857,7 @@
   async function getPobMarketEntries(selected, timeoutMs = 60000) {
     if (!Array.isArray(pobGoodsCache)) {
       pobGoodsCache = await apiPost('/api/pob_goods', {}, timeoutMs);
+      renderMarketRegionButtons();
       populateCommodityMarketSuggestions();
       populateGoodsMarketSuggestions();
       renderTopCommodityMarkets();
@@ -1566,7 +1878,7 @@
       (Array.isArray(item.bases) ? item.bases : []).map(baseEntry =>
         normalizePobGoodEntry(item, baseEntry)
       )
-    );
+    ).filter(marketRegionIncluded);
   }
 
 
@@ -1641,7 +1953,8 @@
 
     const normalized = bases
       .filter(baseEntry => !!baseEntry?.base)
-      .map(baseEntry => normalizePobGoodEntry(pobGood, baseEntry));
+      .map(baseEntry => normalizePobGoodEntry(pobGood, baseEntry))
+      .filter(marketRegionIncluded);
 
     // 1) Dedupe first.
     const rawProducers = dedupeMarketEntries(
@@ -1674,70 +1987,25 @@
         ? nums[mid]
         : (nums[mid - 1] + nums[mid]) / 2;
     }
+    // Producers and consumers are kept regardless of price.
 
-    // 2) Apply the same producer and consumer median-price filters
-    // used by the detailed market.
-    const producerMedian = localMedian(
-      rawProducers
-        .map(good => marketPrice(good.poBGood?.price))
-        .filter(v => v !== null)
-    );
+    let producers = rawProducers.slice();
 
-    const consumerMedian = localMedian(
-      rawConsumers
-        .map(good => marketPrice(good.poBGood?.sell_price))
-        .filter(v => v !== null)
-    );
+    let consumers = rawConsumers.slice();
 
-    let producers = rawProducers.filter(good => {
-      const price = marketPrice(good.poBGood?.price);
-      return producerMedian === null ||
-        (price !== null && price <= producerMedian);
-    });
-
-    let consumers = rawConsumers.filter(good => {
-      const price = marketPrice(good.poBGood?.sell_price);
-
-      if (!(
-        consumerMedian === null ||
-        (price !== null && price >= consumerMedian)
-      )) {
-        return false;
-      }
-
-      // 3) Apply consumer liquidity/funds filter BEFORE netting.
-      const quantity = good.poBGood?.quantity;
-      const maxStock = good.poBGood?.max_stock;
-      const funds = Number.isFinite(Number(good.funds_available))
-        ? Number(good.funds_available)
-        : null;
-
-      if (
-        funds === null ||
-        price === null ||
-        quantity === undefined || quantity === null ||
-        maxStock === undefined || maxStock === null
-      ) {
-        return true;
-      }
-
-      const emptyStock = Math.max(
-        0,
-        Number(maxStock) - Number(quantity)
-      );
-      const entryMarketValue = emptyStock * price;
-
-      return funds > (entryMarketValue * 0.05);
-    });
-
-    // 4) Only now net stations that survived on BOTH sides.
+    // Classify dual-role stations by price, then clear producer supply
+    // against viable importer bids.
     {
-      const netted = netDualRoleMarketEntries(producers, consumers);
-      producers = netted.producers;
-      consumers = netted.consumers;
+      const classified = netDualRoleMarketEntries(producers, consumers);
+      consumers = classified.consumers;
+      producers = clearProducerMarketAgainstConsumers(
+        classified.producers,
+        consumers
+      );
     }
 
-    // 5) Totals use the adjusted/net values.
+    // Producer value is actual economically-cleared value. Export stock priced
+    // above all importer bids contributes zero.
     const producerValue = producers.reduce(
       (sum, good) => sum + producerEntryMarketValue(good),
       0
@@ -2026,7 +2294,9 @@
           const marketGoods = Array.isArray(commodity?.market_goods)
             ? commodity.market_goods
             : [];
-          return marketGoods.filter(good => !good.poB && !good.poBGood);
+          return marketGoods
+            .filter(good => !good.poB && !good.poBGood)
+            .filter(marketRegionIncluded);
         });
       }
 
@@ -2064,55 +2334,30 @@
         return nums.length % 2 ? nums[mid] : (nums[mid - 1] + nums[mid]) / 2;
       }
 
-      const producerMedian = median(rawProducers.map(good =>
-        marketPrice(good.price_base_sells_for) ?? marketPrice(good.poBGood?.price)
-      ).filter(v => v !== null));
-
-      const consumerMedian = median(rawConsumers.map(good =>
-        marketPrice(good.price_base_buys_for) ?? marketPrice(good.poBGood?.sell_price)
-      ).filter(v => v !== null));
-
       let producers = rawProducers
-        .filter(good => {
-          const price = marketPrice(good.price_base_sells_for) ?? marketPrice(good.poBGood?.price);
-          return producerMedian === null || (price !== null && price <= producerMedian);
-        })
         .sort((a, b) =>
           producerEntryMarketValue(b) - producerEntryMarketValue(a)
         );
 
       let consumers = rawConsumers
-        .filter(good => {
-          const price = marketPrice(good.price_base_buys_for) ?? marketPrice(good.poBGood?.sell_price);
-          if (!(consumerMedian === null || (price !== null && price >= consumerMedian))) return false;
-
-          const quantity = good.poBGood?.quantity;
-          const maxStock = good.poBGood?.max_stock;
-          const funds = Number.isFinite(Number(good.funds_available))
-            ? Number(good.funds_available) : null;
-
-          if (
-            funds === null || price === null ||
-            quantity === undefined || quantity === null ||
-            maxStock === undefined || maxStock === null
-          ) return true;
-
-          const entryMarketValue = consumerEntryMarketValue(good);
-          return funds > (entryMarketValue * 0.05);
-        })
         .sort((a, b) =>
           consumerEntryMarketValue(b) - consumerEntryMarketValue(a)
         );
 
-      // Apply producer/consumer netting only AFTER all eligibility filters.
-      // This prevents a filtered-out consumer from erasing a legitimate producer
-      // (and vice versa). The surviving side keeps only the net market value.
+      // Classify dual-role stations first, then clear viable export supply
+      // against the surviving importer order book.
       {
-        const netted = netDualRoleMarketEntries(producers, consumers);
-        producers = netted.producers
-          .sort((a, b) => producerEntryMarketValue(b) - producerEntryMarketValue(a));
-        consumers = netted.consumers
+        const classified = netDualRoleMarketEntries(producers, consumers);
+
+        consumers = classified.consumers
           .sort((a, b) => consumerEntryMarketValue(b) - consumerEntryMarketValue(a));
+
+        producers = clearProducerMarketAgainstConsumers(
+          classified.producers,
+          consumers
+        ).sort((a, b) =>
+          producerEntryMarketValue(b) - producerEntryMarketValue(a)
+        );
       }
 
       producerCountEl.textContent =
@@ -2147,11 +2392,8 @@
 
       info.textContent =
         `${selected.name} (${selected.nickname}) — ${producers.length} supplier(s), ${consumers.length} buyer(s)` +
-        `${producerMedian !== null ? ` — Producer median buy cost: $${producerMedian.toLocaleString()}` : ''}` +
-        `${consumerMedian !== null ? ` — Consumer median sell return: $${consumerMedian.toLocaleString()}` : ''}` +
         `${producerMarketTotal > 0 ? ` — Producer market value: $${producerMarketTotal.toLocaleString()}` : ''}` +
         `${consumerMarketTotal > 0 ? ` — Consumer market value: $${consumerMarketTotal.toLocaleString()}` : ''}` +
-        ` — PoB consumers require funds > 5% of their entry market value.` +
         `${includeNpcBases ? ' — NPC bases included.' : ' — Player-owned bases only.'}`;
 
     } catch (error) {
@@ -2307,8 +2549,7 @@
     $(id).addEventListener('input', () => { updateAccessEntryMode(); updateAccess(); });
   });
   $('accessTarget').addEventListener('input', () => {
-    updateAccessEntryMode();
-    updateAccess();
+
   });
 
   function loadAccess(action, target, list, entry) {
@@ -2316,8 +2557,7 @@
     $('accessTarget').value = target;
     $('accessList').value = list;
     $('accessEntry').value = entry;
-    updateAccessEntryMode();
-    updateAccess();
+
   }
 
   const baseCommands = [
@@ -2554,14 +2794,38 @@
   $('criticalThreshold').addEventListener('input', calculateUpkeep);
   setInterval(calculateUpkeep, 30000);
 
-  updateAccessEntryMode();
-  updateAccess();
-  initBaseCommands();
   updateBank();
   renderShopFields();
   restoreUpkeep();
-  renderHistory();
-  restoreApiCache();
+
+
+  // Standalone market navigation.
+  document.querySelectorAll('.nav-btn[data-target]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.nav-btn[data-target]').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('section.section').forEach(s => s.classList.remove('active'));
+      btn.classList.add('active');
+      const target = document.getElementById(btn.dataset.target);
+      if (target) target.classList.add('active');
+    });
+  });
+
+  // Restore only market-related cached data safely.
+  try {
+    const cache = JSON.parse(localStorage.getItem('dgcApiCache') || 'null');
+    if (cache) {
+      if (Array.isArray(cache.commodities)) commodities = cache.commodities;
+      if (Array.isArray(cache.publicPobs)) publicPobs = cache.publicPobs;
+      renderMarketRegionButtons?.();
+      populateCommodityMarketSuggestions?.();
+      populateGoodsMarketSuggestions?.();
+      renderTopCommodityMarkets?.();
+      renderTopGoodsMarkets?.();
+    }
+  } catch (error) {
+    console.warn('Unable to restore market cache', error);
+  }
+
 </script>
 </body>
 </html>
