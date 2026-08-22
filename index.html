@@ -400,15 +400,16 @@
 
   
     /* Standalone two-page market build */
-    .nav-btn:not([data-target="commodityMarket"]):not([data-target="goodsMarket"]):not([data-target="regionalEconomy"]) {
+    .nav-btn:not([data-target="commodityMarket"]):not([data-target="goodsMarket"]):not([data-target="regionalEconomy"]):not([data-target="pobEconomy"]) {
       display: none !important;
     }
-    section.section:not(#commodityMarket):not(#goodsMarket):not(#regionalEconomy) {
+    section.section:not(#commodityMarket):not(#goodsMarket):not(#regionalEconomy):not(#pobEconomy) {
       display: none !important;
     }
     #commodityMarket.section.active,
     #goodsMarket.section.active,
-    #regionalEconomy.section.active {
+    #regionalEconomy.section.active,
+    #pobEconomy.section.active {
       display: block !important;
     }
 
@@ -420,6 +421,349 @@
         grid-column: 1 / -1 !important;
         grid-row: auto !important;
       }
+    }
+
+
+    /* ---- Market UI visual refresh ---- */
+    :root {
+      --bg:#0b1017;
+      --panel:#121923;
+      --panel-2:#17212d;
+      --border:#293646;
+      --text:#e7edf4;
+      --muted:#8f9dad;
+      --accent:#6fa8dc;
+      --accent-soft:#203a52;
+      --good:#72b88a;
+      --bad:#d97979;
+    }
+
+    body {
+      background:var(--bg);
+      color:var(--text);
+    }
+
+    .sidebar {
+      background:#0e151e;
+      border-right:1px solid var(--border);
+    }
+
+    .card,
+    .history-item,
+    .notice {
+      background:var(--panel);
+      border-color:var(--border);
+      box-shadow:none;
+    }
+
+    .card h2,
+    .card h3 {
+      color:var(--text);
+    }
+
+    .muted,
+    .small.muted {
+      color:var(--muted);
+    }
+
+    .btn {
+      border-radius:7px;
+      box-shadow:none;
+      transition:background .12s ease,border-color .12s ease,opacity .12s ease;
+    }
+
+    .btn.primary,
+    .nav-btn.active {
+      background:var(--accent-soft);
+      border-color:#4f789d;
+      color:#dcecff;
+    }
+
+    .btn.secondary {
+      background:#151e29;
+      border-color:var(--border);
+      color:#b8c5d2;
+    }
+
+    .btn:hover {
+      filter:none;
+      border-color:#52708d;
+    }
+
+    input,
+    select,
+    textarea {
+      background:#0f1620;
+      color:var(--text);
+      border-color:var(--border);
+    }
+
+    /* Region selector: compact single-line strip instead of a huge block. */
+    #commodityMarket .grid > .card:first-child,
+    #goodsMarket .grid > .card:first-child {
+      padding:8px 10px !important;
+    }
+
+    #marketRegionButtons,
+    #marketRegionButtonsGoods {
+      display:flex !important;
+      flex-wrap:nowrap !important;
+      gap:5px !important;
+      overflow-x:auto;
+      overflow-y:hidden;
+      max-width:100%;
+      padding-bottom:2px;
+      scrollbar-width:thin;
+    }
+
+    #marketRegionButtons .btn,
+    #marketRegionButtonsGoods .btn,
+    #marketGlobalRegionButton,
+    #marketGlobalRegionButtonGoods {
+      flex:0 0 auto;
+      padding:4px 8px !important;
+      min-height:28px;
+      font-size:12px;
+      white-space:nowrap;
+    }
+
+    /* Taller result panes so more of the market is visible at once. */
+    #marketProducers,
+    #marketConsumers,
+    #goodsMarketProducers,
+    #goodsMarketConsumers,
+    #regionalEconomyList,
+    #pobEconomyExports,
+    #pobEconomyImports,
+    #pobTradeDetails {
+      max-height:72vh !important;
+      min-height:360px;
+      overflow-y:auto !important;
+      scrollbar-width:thin;
+    }
+
+    /* Make the main market result columns use more of the viewport. */
+    #commodityMarket,
+    #goodsMarket,
+    #regionalEconomy,
+    #pobEconomy {
+      padding-bottom:18px;
+    }
+
+    .history-item {
+      border-radius:7px;
+    }
+
+    @media (max-width:980px) {
+      #marketProducers,
+      #marketConsumers,
+      #goodsMarketProducers,
+      #goodsMarketConsumers,
+      #regionalEconomyList,
+      #pobEconomyExports,
+      #pobEconomyImports,
+      #pobTradeDetails {
+        max-height:62vh !important;
+        min-height:280px;
+      }
+    }
+
+
+    /* Global Economy page should use normal page scrolling, not an inner scroll box. */
+    #regionalEconomyList {
+      max-height:none !important;
+      min-height:0 !important;
+      overflow:visible !important;
+    }
+
+    #regionalEconomy .card {
+      overflow:visible !important;
+    }
+
+    /* PoB Economy: make trade details an obvious landing target. */
+    #pobTradeDetailsCard {
+      scroll-margin-top:18px;
+    }
+
+
+    /* Clickable producer/consumer cards: inherit the dark-theme text colors. */
+    #commodityMarket button.history-item,
+    #goodsMarket button.history-item {
+      color:var(--text) !important;
+      background:var(--panel) !important;
+      border:1px solid var(--border) !important;
+    }
+
+    #commodityMarket button.history-item b,
+    #goodsMarket button.history-item b {
+      color:var(--text) !important;
+    }
+
+    #commodityMarket button.history-item .muted,
+    #commodityMarket button.history-item .small,
+    #goodsMarket button.history-item .muted,
+    #goodsMarket button.history-item .small {
+      color:var(--muted) !important;
+    }
+
+    #commodityMarket button.history-item:hover,
+    #goodsMarket button.history-item:hover {
+      background:var(--panel-2) !important;
+      border-color:#52708d !important;
+    }
+
+
+    /* ---- Readability pass across all pages ---- */
+    body,
+    .main,
+    .section,
+    .card,
+    .history-item,
+    .notice,
+    .field,
+    .topbar,
+    .sidebar,
+    .nav {
+      color:var(--text);
+    }
+
+    .card,
+    .history-item,
+    .notice {
+      background:var(--panel);
+      border-color:var(--border);
+    }
+
+    .card h1,
+    .card h2,
+    .card h3,
+    .card h4,
+    .topbar h1,
+    .topbar h2,
+    .topbar h3,
+    .sidebar h1,
+    .sidebar h2,
+    .sidebar h3,
+    .history-item b,
+    .history-item strong {
+      color:var(--text) !important;
+    }
+
+    .small,
+    .muted,
+    .small.muted,
+    .entry-hint,
+    .sub,
+    .notice .muted {
+      color:var(--muted) !important;
+    }
+
+    /* All clickable cards/buttons should inherit the dark theme instead of
+       browser-default black text. */
+    button.history-item,
+    .history-item button,
+    #regionalEconomy button.history-item,
+    #pobEconomy button.history-item {
+      color:var(--text) !important;
+      background:var(--panel) !important;
+      border:1px solid var(--border) !important;
+    }
+
+    button.history-item b,
+    button.history-item strong,
+    .history-item button b,
+    .history-item button strong {
+      color:var(--text) !important;
+    }
+
+    button.history-item .small,
+    button.history-item .muted,
+    .history-item button .small,
+    .history-item button .muted {
+      color:var(--muted) !important;
+    }
+
+    button.history-item:hover,
+    .history-item button:hover {
+      background:var(--panel-2) !important;
+      border-color:#52708d !important;
+    }
+
+    /* Regular controls */
+    .btn,
+    button.btn {
+      color:var(--text);
+    }
+
+    .btn.secondary,
+    button.btn.secondary {
+      color:#c8d4df !important;
+      background:#151e29 !important;
+      border-color:var(--border) !important;
+    }
+
+    .btn.primary,
+    button.btn.primary,
+    .nav-btn.active {
+      color:#e6f2ff !important;
+      background:var(--accent-soft) !important;
+      border-color:#4f789d !important;
+    }
+
+    .nav-btn {
+      color:#b8c5d2 !important;
+    }
+
+    .nav-btn:hover {
+      color:#e6edf5 !important;
+      background:#151e29 !important;
+    }
+
+    /* Inputs and native controls */
+    input,
+    select,
+    textarea {
+      color:var(--text) !important;
+      background:#0f1620 !important;
+      border-color:var(--border) !important;
+    }
+
+    input::placeholder,
+    textarea::placeholder {
+      color:#6f7d8d !important;
+      opacity:1;
+    }
+
+    label {
+      color:#cbd6e1;
+    }
+
+    /* Economy page cards */
+    #regionalEconomy .history-item,
+    #pobEconomy .history-item,
+    #pobTradeDetails .history-item {
+      color:var(--text) !important;
+    }
+
+    #regionalEconomy .history-item .small,
+    #pobEconomy .history-item .small,
+    #pobTradeDetails .history-item .small {
+      color:var(--muted) !important;
+    }
+
+    /* Keep numeric values bright enough to scan. */
+    #regionalEconomy b,
+    #pobEconomyGDP b,
+    #pobEconomyExports b,
+    #pobEconomyImports b,
+    #pobTradeDetails b {
+      color:#eef4fa !important;
+    }
+
+    /* Notice/status areas */
+    .notice {
+      color:#cbd6e1 !important;
+      background:#111a24 !important;
     }
 
 </style>
@@ -435,6 +779,7 @@
       <button class="nav-btn active" data-target="commodityMarket">Commodity Market</button>
       <button class="nav-btn" data-target="goodsMarket">Goods Market</button>
       <button class="nav-btn" data-target="regionalEconomy">Global Economy</button>
+      <button class="nav-btn" data-target="pobEconomy">PoB Economy</button>
     </nav>
   </aside>
 
@@ -442,7 +787,7 @@
     <div class="topbar">
       <div>
         <h2>DiscoveryGC Market Console</h2>
-        <p>Live market analysis powered by Darkstat. Please donate credits to donnel_bank thank you!</p>
+        <p>Live market analysis powered by Darkstat.</p>
       </div>
       <div class="clock" style="display:flex;flex-direction:column;gap:6px;min-width:245px;">
         <div id="liveClock">Loading local time…</div>
@@ -631,6 +976,67 @@
           <h3>Regional GDP</h3>
           <div id="regionalEconomyList" class="history-list">
             <div class="muted">No GDP data loaded.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <section id="pobEconomy" class="section">
+      <div class="grid">
+        <div class="card span-12">
+          <div style="display:flex;justify-content:space-between;gap:14px;align-items:flex-start;flex-wrap:wrap;">
+            <div style="min-width:260px;flex:1;">
+              <h3 id="pobEconomyTitle">PoB Economy</h3>
+              <div id="pobEconomyLocation" class="small muted">Select a PoB from Global Economy.</div>
+            </div>
+            <div id="pobEconomyGDP" style="text-align:right;"></div>
+          </div>
+
+          <div class="field" style="margin-top:14px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;">
+              <label for="pobEconomySearch" style="margin:0;">Find PoB</label>
+              <button id="pobEconomyFetchButton"
+                      class="btn secondary"
+                      type="button"
+                      style="padding:6px 10px;"
+                      onclick="refreshPobEconomySearchData()">
+                Fetch PoBs
+              </button>
+            </div>
+            <input id="pobEconomySearch"
+                   list="pobEconomySuggestions"
+                   placeholder="Start typing a PoB name or nickname"
+                   autocomplete="off"
+                   oninput="updatePobEconomySuggestions()"
+                   onchange="selectPobEconomySearch()"
+                   onkeydown="handlePobEconomySearchKey(event)" />
+            <datalist id="pobEconomySuggestions"></datalist>
+          </div>
+
+          <div id="pobEconomySummary" class="notice" style="margin-top:14px;">
+            Click a PoB on the Global Economy page or search above to inspect its trade relationships.
+          </div>
+        </div>
+
+        <div class="card span-6">
+          <h3>Production</h3>
+          <div id="pobEconomyExports" class="history-list">
+            <div class="muted">No PoB selected.</div>
+          </div>
+        </div>
+
+        <div class="card span-6">
+          <h3>Consumption</h3>
+          <div id="pobEconomyImports" class="history-list">
+            <div class="muted">No PoB selected.</div>
+          </div>
+        </div>
+
+        <div class="card span-12" id="pobTradeDetailsCard">
+          <h3 id="pobTradeDetailsTitle">Trade Flow</h3>
+          <div id="pobTradeDetails" class="history-list">
+            <div class="muted">Click a production or consumption item above to see its trade flow.</div>
           </div>
         </div>
       </div>
@@ -1133,16 +1539,15 @@
     });
   }
 
-  function calculateRegionalGDPs() {
+  function calculateRegionalGDPDetails() {
     const regionalGDP = new Map();
+    const regionalPobs = new Map();
 
     if (!Array.isArray(pobGoodsCache) || !pobGoodsCache.length) {
-      return regionalGDP;
+      return { regionalGDP, regionalPobs };
     }
 
-    // Merge duplicate PoB-good records by nickname before clearing, so the
-    // same market item cannot be counted twice simply because Darkstat
-    // returned multiple records for it.
+    // Merge duplicate PoB-good records by nickname before market clearing.
     const goodsByNickname = new Map();
 
     for (const item of pobGoodsCache) {
@@ -1170,7 +1575,6 @@
         .filter(baseEntry => !!baseEntry?.base)
         .map(baseEntry => normalizePobGoodEntry(mergedGood, baseEntry));
 
-      // Same base/item duplicate handling as the live market.
       let producers = dedupeMarketEntries(
         normalized.filter(good => {
           const q = Number(good.poBGood?.quantity ?? 0);
@@ -1189,28 +1593,62 @@
         'consumer'
       );
 
-      // Price-based importer/exporter classification.
       const classified = netDualRoleMarketEntries(producers, consumers);
-      producers = classified.producers;
-      consumers = classified.consumers;
-
-      // ConsumerEntryMarketValue / consumerFundedUnits already cap demand
-      // by available station funds. Clear the global producer book once.
-      producers = clearProducerMarketAgainstConsumers(producers, consumers);
+      producers = clearProducerMarketAgainstConsumers(
+        classified.producers,
+        classified.consumers
+      );
 
       for (const producer of producers) {
         const value = producerEntryMarketValue(producer);
         if (!(value > 0)) continue;
 
         const region = marketRegionOf(producer) || 'Location unavailable';
+        const pobName = clean(
+          producer.base_name ||
+          producer.poB?.name ||
+          producer.base_nickname ||
+          producer.poB?.nickname ||
+          'Unknown PoB'
+        );
+
+        const pobKey = clean(
+          producer.base_nickname ||
+          producer.poB?.nickname ||
+          pobName
+        ).toLowerCase();
+
         regionalGDP.set(
           region,
           (regionalGDP.get(region) || 0) + value
         );
+
+        if (!regionalPobs.has(region)) {
+          regionalPobs.set(region, new Map());
+        }
+
+        const regionMap = regionalPobs.get(region);
+        const existing = regionMap.get(pobKey);
+
+        if (existing) {
+          existing.gdp += value;
+        } else {
+          regionMap.set(pobKey, {
+            name: pobName,
+            nickname: clean(producer.base_nickname || producer.poB?.nickname || ''),
+            system: clean(producer.system_name || producer.poB?.system_name || ''),
+            sector: clean(producer.sector_coord || producer.poB?.sector_coord || ''),
+            gdp: value
+          });
+        }
       }
     }
 
-    return regionalGDP;
+    return { regionalGDP, regionalPobs };
+  }
+
+  function calculateRegionalGDPs() {
+    return calculateRegionalGDPDetails().regionalGDP;
   }
 
   function formatCompactMoney(value) {
@@ -1230,9 +1668,15 @@
     const summary = $('regionalEconomySummary');
     if (!list || !summary) return;
 
-    const regionalGDP = calculateRegionalGDPs();
+    const { regionalGDP, regionalPobs } = calculateRegionalGDPDetails();
+
     const rows = [...regionalGDP.entries()]
-      .map(([region, gdp]) => ({ region, gdp: Number(gdp || 0) }))
+      .map(([region, gdp]) => ({
+        region,
+        gdp: Number(gdp || 0),
+        pobs: [...(regionalPobs.get(region)?.values() || [])]
+          .sort((a, b) => b.gdp - a.gdp)
+      }))
       .sort((a, b) => b.gdp - a.gdp);
 
     const totalGDP = rows.reduce((sum, row) => sum + row.gdp, 0);
@@ -1246,24 +1690,655 @@
     summary.textContent =
       `Global GDP: $${totalGDP.toLocaleString()} • ${rows.length.toLocaleString()} regions`;
 
-    list.innerHTML = rows.map((row, index) => {
-      const share = totalGDP > 0 ? (row.gdp / totalGDP) * 100 : 0;
+    list.innerHTML = rows.map((row, regionIndex) => {
+      const regionShare = totalGDP > 0 ? (row.gdp / totalGDP) * 100 : 0;
+
+      const pobRows = row.pobs.length
+        ? row.pobs.map((pob, pobIndex) => {
+            const regionContribution = row.gdp > 0
+              ? (pob.gdp / row.gdp) * 100
+              : 0;
+
+            const location = [pob.system, row.region, pob.sector]
+              .filter(Boolean)
+              .join(' • ');
+
+            return `
+              <button type="button"
+                      class="history-item"
+                      style="font-family:inherit;cursor:pointer;margin-top:8px;width:100%;text-align:left;"
+                      onclick="openPobEconomy('${escapeHtml((pob.nickname || pob.name)).replace(/'/g, '&#39;')}')">
+                <div style="display:flex;justify-content:space-between;gap:14px;align-items:flex-start;">
+                  <div style="min-width:0;">
+                    <b>${pobIndex + 1}. ${escapeHtml(pob.name)}</b>
+                    ${location ? `
+                      <div class="small muted" style="margin-top:4px;">
+                        ${escapeHtml(location)}
+                      </div>` : ''}
+                    <div class="small muted" style="margin-top:4px;">
+                      ${regionContribution.toFixed(2)}% of ${escapeHtml(row.region)} GDP
+                    </div>
+                  </div>
+                  <div style="text-align:right;white-space:nowrap;">
+                    <b>$${pob.gdp.toLocaleString()}</b>
+                    <div class="small muted">${formatCompactMoney(pob.gdp)}</div>
+                  </div>
+                </div>
+              </button>`;
+          }).join('')
+        : '<div class="muted" style="margin-top:8px;">No contributing PoBs.</div>';
+
+      const detailsId = `region-gdp-${regionIndex}`;
+
       return `
-        <div class="history-item" style="font-family:inherit;cursor:default;">
-          <div style="display:flex;justify-content:space-between;gap:14px;align-items:flex-start;">
+        <div class="history-item" style="font-family:inherit;cursor:default;margin-bottom:14px;">
+          <button type="button"
+                  class="btn secondary"
+                  style="width:100%;display:flex;justify-content:space-between;gap:14px;align-items:flex-start;text-align:left;padding:10px 12px;"
+                  aria-expanded="false"
+                  aria-controls="${detailsId}"
+                  onclick="toggleRegionGDPDetails(this, '${detailsId}')">
             <div>
-              <b>${index + 1}. ${escapeHtml(row.region)}</b>
+              <b>${regionIndex + 1}. ${escapeHtml(row.region)}</b>
               <div class="small muted" style="margin-top:4px;">
-                Share of global GDP: ${share.toFixed(2)}%
+                ${regionShare.toFixed(2)}% of global GDP • ${row.pobs.length} contributing PoB${row.pobs.length === 1 ? '' : 's'}
               </div>
             </div>
-            <div style="text-align:right;">
+            <div style="text-align:right;white-space:nowrap;">
               <b>$${row.gdp.toLocaleString()}</b>
               <div class="small muted">${formatCompactMoney(row.gdp)}</div>
+              <div class="small muted" style="margin-top:4px;">Expand ▼</div>
             </div>
+          </button>
+
+          <div id="${detailsId}"
+               style="display:none;margin-top:10px;padding-top:10px;border-top:1px solid var(--border);">
+            ${pobRows}
           </div>
         </div>`;
     }).join('');
+  }
+
+
+  function pobIdentity(good) {
+    return clean(
+      good?.base_nickname ||
+      good?.poB?.nickname ||
+      good?.base_name ||
+      good?.poB?.name ||
+      ''
+    ).toLowerCase();
+  }
+
+  function pobDisplayName(good) {
+    return clean(
+      good?.base_name ||
+      good?.poB?.name ||
+      good?.base_nickname ||
+      good?.poB?.nickname ||
+      'Unknown PoB'
+    );
+  }
+
+  function viableConsumersForProducer(producer, consumers) {
+    const exportPrice =
+      marketPrice(producer.price_base_sells_for) ??
+      marketPrice(producer.poBGood?.price);
+
+    if (exportPrice === null) return [];
+
+    return consumers
+      .filter(consumer => {
+        const importPrice =
+          marketPrice(consumer.price_base_buys_for) ??
+          marketPrice(consumer.poBGood?.sell_price);
+
+        if (importPrice === null) return false;
+        if (importPrice <= exportPrice) return false;
+
+        // Consumer must have some funded demand.
+        return consumerFundedUnits(consumer) > 0;
+      })
+      .sort((a, b) => {
+        const aPrice =
+          marketPrice(a.price_base_buys_for) ??
+          marketPrice(a.poBGood?.sell_price) ??
+          0;
+        const bPrice =
+          marketPrice(b.price_base_buys_for) ??
+          marketPrice(b.poBGood?.sell_price) ??
+          0;
+        return bPrice - aPrice;
+      });
+  }
+
+  function viableProducersForConsumer(consumer, producers) {
+    const importPrice =
+      marketPrice(consumer.price_base_buys_for) ??
+      marketPrice(consumer.poBGood?.sell_price);
+
+    if (importPrice === null || consumerFundedUnits(consumer) <= 0) return [];
+
+    return producers
+      .filter(producer => {
+        const exportPrice =
+          marketPrice(producer.price_base_sells_for) ??
+          marketPrice(producer.poBGood?.price);
+
+        if (exportPrice === null) return false;
+        if (exportPrice >= importPrice) return false;
+
+        const quantity = Number(producer.poBGood?.quantity ?? 0);
+        const minStock = Number(producer.poBGood?.min_stock ?? 0);
+        return Math.max(0, quantity - minStock) > 0;
+      })
+      .sort((a, b) => {
+        const aPrice =
+          marketPrice(a.price_base_sells_for) ??
+          marketPrice(a.poBGood?.price) ??
+          Infinity;
+        const bPrice =
+          marketPrice(b.price_base_sells_for) ??
+          marketPrice(b.poBGood?.price) ??
+          Infinity;
+        return aPrice - bPrice;
+      });
+  }
+
+  function buildGlobalPobTradeLedger() {
+    const pobs = new Map();
+
+    if (!Array.isArray(pobGoodsCache) || !pobGoodsCache.length) {
+      return pobs;
+    }
+
+    const goodsByNickname = new Map();
+
+    for (const item of pobGoodsCache) {
+      if (isExcludedMarketCommodity(item)) continue;
+
+      const nickname = clean(item.nickname || item.name).toLowerCase();
+      if (!nickname) continue;
+
+      if (!goodsByNickname.has(nickname)) {
+        goodsByNickname.set(nickname, {
+          name: item.name,
+          nickname: item.nickname,
+          bases: []
+        });
+      }
+
+      if (Array.isArray(item.bases)) {
+        goodsByNickname.get(nickname).bases.push(...item.bases);
+      }
+    }
+
+    const ensurePob = good => {
+      const key = pobIdentity(good);
+      if (!key) return null;
+
+      if (!pobs.has(key)) {
+        pobs.set(key, {
+          key,
+          name: pobDisplayName(good),
+          nickname: clean(good.base_nickname || good.poB?.nickname || ''),
+          system: clean(good.system_name || good.poB?.system_name || ''),
+          region: marketRegionOf(good) || 'Location unavailable',
+          sector: clean(good.sector_coord || good.poB?.sector_coord || ''),
+          gdp: 0,
+          exports: [],
+          imports: []
+        });
+      }
+
+      return pobs.get(key);
+    };
+
+    for (const mergedGood of goodsByNickname.values()) {
+      const normalized = mergedGood.bases
+        .filter(baseEntry => !!baseEntry?.base)
+        .map(baseEntry => normalizePobGoodEntry(mergedGood, baseEntry));
+
+      let producers = dedupeMarketEntries(
+        normalized.filter(good => {
+          const q = Number(good.poBGood?.quantity ?? 0);
+          const min = Number(good.poBGood?.min_stock ?? 0);
+          return marketPrice(good.poBGood?.price) !== null && q > min;
+        }),
+        'producer'
+      );
+
+      let consumers = dedupeMarketEntries(
+        normalized.filter(good => {
+          const q = Number(good.poBGood?.quantity ?? 0);
+          const max = Number(good.poBGood?.max_stock ?? 0);
+          return marketPrice(good.poBGood?.sell_price) !== null && q < max;
+        }),
+        'consumer'
+      );
+
+      const classified = netDualRoleMarketEntries(producers, consumers);
+      producers = classified.producers;
+      consumers = classified.consumers;
+
+      clearProducerMarketAgainstConsumers(producers, consumers);
+
+      for (const producer of producers) {
+        const pob = ensurePob(producer);
+        if (!pob) continue;
+
+        const exportPrice =
+          marketPrice(producer.price_base_sells_for) ??
+          marketPrice(producer.poBGood?.price);
+
+        const quantity = Number(producer.poBGood?.quantity ?? 0);
+        const minStock = Number(producer.poBGood?.min_stock ?? 0);
+        const available = Math.max(0, quantity - minStock);
+        const clearedUnits = Number(producer._cleared_units || 0);
+        const clearedValue = Number(producer._cleared_market_value || 0);
+
+        pob.gdp += clearedValue;
+        const viableConsumers = viableConsumersForProducer(producer, consumers);
+
+        pob.exports.push({
+          itemName: clean(producer.name || mergedGood.name || producer.nickname),
+          itemNickname: clean(producer.nickname || mergedGood.nickname),
+          exportPrice,
+          available,
+          clearedUnits,
+          clearedValue,
+          matches: viableConsumers.map(matchGood => ({
+            pobName: pobDisplayName(matchGood),
+            pobKey: pobIdentity(matchGood),
+            region: marketRegionOf(matchGood) || 'Location unavailable',
+            system: clean(matchGood.system_name || matchGood.poB?.system_name || ''),
+            units: consumerFundedUnits(matchGood),
+            unitPrice:
+              marketPrice(matchGood.price_base_buys_for) ??
+              marketPrice(matchGood.poBGood?.sell_price) ??
+              0,
+            value: consumerEntryMarketValue(matchGood)
+          }))
+        });
+      }
+
+      for (const consumer of consumers) {
+        const pob = ensurePob(consumer);
+        if (!pob) continue;
+
+        const importPrice =
+          marketPrice(consumer.price_base_buys_for) ??
+          marketPrice(consumer.poBGood?.sell_price);
+
+        const quantity = Number(consumer.poBGood?.quantity ?? 0);
+        const maxStock = Number(consumer.poBGood?.max_stock ?? quantity);
+        const emptyStock = Math.max(0, maxStock - quantity);
+        const fundedUnits = consumerFundedUnits(consumer);
+        const fundedValue = consumerEntryMarketValue(consumer);
+
+        const viableProducers = viableProducersForConsumer(consumer, producers);
+
+        pob.imports.push({
+          itemName: clean(consumer.name || mergedGood.name || consumer.nickname),
+          itemNickname: clean(consumer.nickname || mergedGood.nickname),
+          importPrice,
+          emptyStock,
+          fundedUnits,
+          fundedValue,
+          matches: viableProducers.map(matchGood => {
+            const exportPrice =
+              marketPrice(matchGood.price_base_sells_for) ??
+              marketPrice(matchGood.poBGood?.price) ??
+              0;
+
+            const quantity = Number(matchGood.poBGood?.quantity ?? 0);
+            const minStock = Number(matchGood.poBGood?.min_stock ?? 0);
+            const available = Math.max(0, quantity - minStock);
+
+            return {
+              pobName: pobDisplayName(matchGood),
+              pobKey: pobIdentity(matchGood),
+              region: marketRegionOf(matchGood) || 'Location unavailable',
+              system: clean(matchGood.system_name || matchGood.poB?.system_name || ''),
+              units: available,
+              unitPrice: exportPrice,
+              value: available * exportPrice
+            };
+          })
+        });
+      }
+    }
+
+    for (const pob of pobs.values()) {
+      pob.exports.sort((a, b) => b.clearedValue - a.clearedValue);
+      pob.imports.sort((a, b) => b.fundedValue - a.fundedValue);
+    }
+
+    return pobs;
+  }
+
+  let selectedPobEconomyKey = '';
+
+  function showSection(targetId) {
+    document.querySelectorAll('.nav-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.target === targetId);
+    });
+    document.querySelectorAll('section.section').forEach(section => {
+      section.classList.toggle('active', section.id === targetId);
+    });
+  }
+
+  function openPobEconomy(pobKey) {
+    selectedPobEconomyKey = clean(pobKey).toLowerCase();
+    showSection('pobEconomy');
+    renderPobEconomy();
+
+    const ledger = buildGlobalPobTradeLedger();
+    updatePobEconomySuggestions();
+    const pob = ledger.get(selectedPobEconomyKey);
+    const input = $('pobEconomySearch');
+    if (input && pob) {
+      input.value = pob.name;
+      updatePobEconomySuggestions();
+    }
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  async function refreshPobEconomySearchData() {
+    const button = $('pobEconomyFetchButton');
+    const summary = $('pobEconomySummary');
+
+    if (button) {
+      button.disabled = true;
+      button.textContent = 'Fetching…';
+    }
+
+    if (summary) {
+      summary.textContent = 'Fetching current PoB market data…';
+    }
+
+    try {
+      pobGoodsCache = await apiPost('/api/pob_goods', {}, 60000);
+
+      renderMarketRegionButtons();
+      populateCommodityMarketSuggestions?.();
+      populateGoodsMarketSuggestions?.();
+      renderTopCommodityMarkets?.();
+      renderTopGoodsMarkets?.();
+      renderRegionalEconomy?.();
+      updatePobEconomySuggestions();
+
+      const input = $('pobEconomySearch');
+      const count = buildGlobalPobTradeLedger().size;
+
+      if (summary) {
+        summary.textContent =
+          `PoB data refreshed — ${count.toLocaleString()} PoB${count === 1 ? '' : 's'} available to search.`;
+      }
+
+      // If the user already typed a valid PoB, open it immediately after fetch.
+      if (input && clean(input.value)) {
+        const selected = resolvePobEconomySearch(input.value);
+        if (selected) {
+          input.value = selected.name;
+          selectedPobEconomyKey = selected.key;
+          renderPobEconomy();
+        }
+      }
+    } catch (error) {
+      if (summary) {
+        summary.textContent = `PoB fetch failed: ${error.message}`;
+      }
+    } finally {
+      if (button) {
+        button.disabled = false;
+        button.textContent = 'Fetch PoBs';
+      }
+    }
+  }
+
+  function pobEconomySearchItems() {
+    const ledger = buildGlobalPobTradeLedger();
+
+    return [...ledger.values()]
+      .map(pob => ({
+        key: pob.key,
+        name: clean(pob.name),
+        nickname: clean(pob.nickname),
+        region: clean(pob.region),
+        system: clean(pob.system)
+      }))
+      .sort((a, b) => a.name.localeCompare(b.name));
+  }
+
+  function updatePobEconomySuggestions() {
+    const input = $('pobEconomySearch');
+    const list = $('pobEconomySuggestions');
+    if (!input || !list) return;
+
+    const q = clean(input.value).toLowerCase();
+    const items = pobEconomySearchItems();
+
+    const matches = items
+      .filter(item => {
+        if (!q) return true;
+        return (
+          item.name.toLowerCase().includes(q) ||
+          item.nickname.toLowerCase().includes(q) ||
+          item.region.toLowerCase().includes(q) ||
+          item.system.toLowerCase().includes(q)
+        );
+      })
+      .slice(0, 40);
+
+    list.innerHTML = matches.map(item => {
+      const detail = [item.nickname, item.system, item.region]
+        .filter(Boolean)
+        .join(' • ');
+
+      return `<option value="${escapeHtml(item.name)}">${escapeHtml(detail)}</option>`;
+    }).join('');
+  }
+
+  function resolvePobEconomySearch(value) {
+    const q = clean(value).toLowerCase();
+    if (!q) return null;
+
+    const items = pobEconomySearchItems();
+
+    return items.find(item =>
+      item.name.toLowerCase() === q ||
+      item.nickname.toLowerCase() === q ||
+      item.key.toLowerCase() === q
+    ) || items.find(item =>
+      item.name.toLowerCase().includes(q) ||
+      item.nickname.toLowerCase().includes(q)
+    ) || null;
+  }
+
+  function selectPobEconomySearch() {
+    const input = $('pobEconomySearch');
+    if (!input) return;
+
+    const selected = resolvePobEconomySearch(input.value);
+    if (!selected) return;
+
+    input.value = selected.name;
+    openPobEconomy(selected.key);
+  }
+
+  function handlePobEconomySearchKey(event) {
+    if (event.key !== 'Enter') return;
+
+    event.preventDefault();
+    selectPobEconomySearch();
+  }
+
+  function renderPobEconomy() {
+    const ledger = buildGlobalPobTradeLedger();
+    const pob = ledger.get(selectedPobEconomyKey);
+
+    const title = $('pobEconomyTitle');
+    const location = $('pobEconomyLocation');
+    const gdp = $('pobEconomyGDP');
+    const summary = $('pobEconomySummary');
+    const exportsEl = $('pobEconomyExports');
+    const importsEl = $('pobEconomyImports');
+    const details = $('pobTradeDetails');
+    const detailsTitle = $('pobTradeDetailsTitle');
+
+    if (!pob) {
+      if (title) title.textContent = 'PoB Economy';
+      if (location) location.textContent = 'Select a PoB from Global Economy.';
+      if (gdp) gdp.innerHTML = '';
+      if (summary) summary.textContent = 'No PoB selected.';
+      if (exportsEl) exportsEl.innerHTML = '<div class="muted">No PoB selected.</div>';
+      if (importsEl) importsEl.innerHTML = '<div class="muted">No PoB selected.</div>';
+      if (details) details.innerHTML = '<div class="muted">Click a production or consumption item above to see its trade flow.</div>';
+      if (detailsTitle) detailsTitle.textContent = 'Trade Flow';
+      return;
+    }
+
+    title.textContent = pob.name;
+    location.textContent = [pob.system, pob.region, pob.sector].filter(Boolean).join(' • ');
+    gdp.innerHTML = `<b>GDP $${pob.gdp.toLocaleString()}</b><div class="small muted">${formatCompactMoney(pob.gdp)}</div>`;
+    summary.textContent =
+      `${pob.exports.length} production item${pob.exports.length === 1 ? '' : 's'} • ` +
+      `${pob.imports.length} consumption item${pob.imports.length === 1 ? '' : 's'}`;
+
+    exportsEl.innerHTML = pob.exports.length
+      ? pob.exports.map((item, index) => `
+          <button type="button"
+                  class="history-item"
+                  style="font-family:inherit;text-align:left;width:100%;cursor:pointer;"
+                  onclick="showPobTradeMatches('export', ${index})">
+            <div style="display:flex;justify-content:space-between;gap:12px;">
+              <div>
+                <b>${escapeHtml(item.itemName)}</b>
+                <div class="small muted" style="margin-top:4px;">
+                  Export $${Number(item.exportPrice || 0).toLocaleString()} •
+                  Available ${item.available.toLocaleString()} •
+                  Cleared ${item.clearedUnits.toLocaleString()}
+                </div>
+              </div>
+              <div style="text-align:right;white-space:nowrap;">
+                <b>$${item.clearedValue.toLocaleString()}</b>
+                <div class="small muted">Exporting to: ${item.matches.length}</div>
+              </div>
+            </div>
+          </button>`)
+        .join('')
+      : '<div class="muted">No exports.</div>';
+
+    importsEl.innerHTML = pob.imports.length
+      ? pob.imports.map((item, index) => `
+          <button type="button"
+                  class="history-item"
+                  style="font-family:inherit;text-align:left;width:100%;cursor:pointer;"
+                  onclick="showPobTradeMatches('import', ${index})">
+            <div style="display:flex;justify-content:space-between;gap:12px;">
+              <div>
+                <b>${escapeHtml(item.itemName)}</b>
+                <div class="small muted" style="margin-top:4px;">
+                  Import $${Number(item.importPrice || 0).toLocaleString()} •
+                  Empty ${item.emptyStock.toLocaleString()} •
+                  Funded ${item.fundedUnits.toLocaleString()}
+                </div>
+              </div>
+              <div style="text-align:right;white-space:nowrap;">
+                <b>$${item.fundedValue.toLocaleString()}</b>
+                <div class="small muted">Importing from: ${item.matches.length}</div>
+              </div>
+            </div>
+          </button>`)
+        .join('')
+      : '<div class="muted">No imports.</div>';
+
+    detailsTitle.textContent = 'Trade Flow';
+    details.innerHTML = '<div class="muted">Click a production or consumption item above to see its trade flow.</div>';
+  }
+
+  function showPobTradeMatches(direction, index) {
+    const ledger = buildGlobalPobTradeLedger();
+    const pob = ledger.get(selectedPobEconomyKey);
+    if (!pob) return;
+
+    const item = direction === 'export'
+      ? pob.exports[index]
+      : pob.imports[index];
+
+    if (!item) return;
+
+    const title = $('pobTradeDetailsTitle');
+    const details = $('pobTradeDetails');
+
+    title.textContent = direction === 'export'
+      ? `${item.itemName} — Exporting to: ${item.matches.length}`
+      : `${item.itemName} — Importing from: ${item.matches.length}`;
+
+    if (!item.matches.length) {
+      details.innerHTML = direction === 'export'
+        ? '<div class="muted">This production currently has no viable importing stations.</div>'
+        : '<div class="muted">This consumption currently has no viable exporting stations.</div>';
+
+      const detailsCard = $('pobTradeDetailsCard');
+      if (detailsCard) {
+        detailsCard.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start'
+        });
+      }
+      return;
+    }
+
+    details.innerHTML = item.matches
+      .slice()
+      .sort((a, b) => b.value - a.value)
+      .map((match, matchIndex) => `
+        <button type="button"
+                class="history-item"
+                style="font-family:inherit;text-align:left;width:100%;cursor:pointer;"
+                onclick="openPobEconomy('${escapeHtml(match.pobKey).replace(/'/g, '&#39;')}')">
+          <div style="display:flex;justify-content:space-between;gap:12px;">
+            <div>
+              <b>${matchIndex + 1}. ${escapeHtml(match.pobName)}</b>
+              <div class="small muted" style="margin-top:4px;">
+                ${escapeHtml([match.system, match.region].filter(Boolean).join(' • '))}
+              </div>
+            </div>
+            <div style="text-align:right;white-space:nowrap;">
+              <b>${match.units.toLocaleString()} viable units</b>
+              <div class="small muted">
+                @ $${match.unitPrice.toLocaleString()} • potential $${match.value.toLocaleString()}
+              </div>
+            </div>
+          </div>
+        </button>`)
+      .join('');
+
+    const detailsCard = $('pobTradeDetailsCard');
+    if (detailsCard) {
+      detailsCard.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }
+  }
+
+  function toggleRegionGDPDetails(button, detailsId) {
+    const details = $(detailsId);
+    if (!details) return;
+
+    const opening = details.style.display === 'none';
+    details.style.display = opening ? 'block' : 'none';
+    button.setAttribute('aria-expanded', opening ? 'true' : 'false');
+
+    const labels = button.querySelectorAll('.small.muted');
+    const toggleLabel = labels[labels.length - 1];
+    if (toggleLabel) {
+      toggleLabel.textContent = opening ? 'Collapse ▲' : 'Expand ▼';
+    }
   }
 
   async function refreshRegionalEconomy() {
@@ -1504,7 +2579,10 @@
           return null;
         }
 
+        good._funded_matches = [];
+
         return {
+          good,
           importPrice,
           remaining: consumerFundedUnits(good)
         };
@@ -1539,6 +2617,7 @@
 
       let clearedUnits = 0;
       let clearedValue = 0;
+      producer._cleared_matches = [];
 
       if (exportPrice !== null && remainingSupply > 0) {
         for (const order of demandBook) {
@@ -1546,14 +2625,30 @@
 
           // Demand below the producer's export price is not economically viable.
           // Because bids are sorted high -> low, we can stop here.
-          if (order.importPrice < exportPrice) break;
+          if (order.importPrice <= exportPrice) break;
           if (order.remaining <= 0) continue;
 
           const matched = Math.min(remainingSupply, order.remaining);
 
+          const matchedValue = matched * order.importPrice;
+
           clearedUnits += matched;
           // Producer market value is valued at the importer's bid price.
-          clearedValue += matched * order.importPrice;
+          clearedValue += matchedValue;
+
+          producer._cleared_matches.push({
+            good: order.good,
+            units: matched,
+            unitPrice: order.importPrice,
+            value: matchedValue
+          });
+
+          order.good._funded_matches.push({
+            good: producer,
+            units: matched,
+            unitPrice: order.importPrice,
+            value: matchedValue
+          });
 
           remainingSupply -= matched;
           order.remaining -= matched;
@@ -1615,6 +2710,16 @@
     };
   }
 
+  function marketCardPobKey(good) {
+    return clean(
+      good?.base_nickname ||
+      good?.poB?.nickname ||
+      good?.base_name ||
+      good?.poB?.name ||
+      ''
+    ).toLowerCase();
+  }
+
   function producerCard(good, overallMarketValue = 0) {
     const sellPrice =
       marketPrice(good.price_base_sells_for) ??
@@ -1662,8 +2767,13 @@
       ? ` • Market share: ${marketSharePercent.toFixed(2)}%`
       : '';
 
+    const pobKey = marketCardPobKey(good);
+
     return `
-      <div class="history-item" style="font-family:inherit;cursor:default;">
+      <button type="button"
+              class="history-item"
+              style="font-family:inherit;cursor:pointer;width:100%;text-align:left;"
+              onclick="openPobEconomy('${escapeHtml(pobKey).replace(/'/g, '&#39;')}')">
         <b>${escapeHtml(good.base_name || good.poB?.name || good.base_nickname || 'Unknown Base')}</b>
         <div class="small muted" style="margin-top:5px;">
           ${escapeHtml(marketBaseType(good))}
@@ -1678,7 +2788,7 @@
         <div class="small muted" style="margin-top:4px;">
           ${escapeHtml(marketLocationLine(good) || 'Location unavailable')}
         </div>
-      </div>`;
+      </button>`;
   }
 
   function consumerCard(good, overallMarketValue = 0) {
@@ -1720,8 +2830,13 @@
       ? Number(good.funds_available)
       : null;
 
+    const pobKey = marketCardPobKey(good);
+
     return `
-      <div class="history-item" style="font-family:inherit;cursor:default;">
+      <button type="button"
+              class="history-item"
+              style="font-family:inherit;cursor:pointer;width:100%;text-align:left;"
+              onclick="openPobEconomy('${escapeHtml(pobKey).replace(/'/g, '&#39;')}')">
         <b>${escapeHtml(good.base_name || good.poB?.name || good.base_nickname || 'Unknown Base')}</b>
         <div class="small muted" style="margin-top:5px;">
           ${escapeHtml(marketBaseType(good))}
@@ -1741,7 +2856,7 @@
         <div class="small muted" style="margin-top:4px;">
           ${escapeHtml(marketLocationLine(good) || 'Location unavailable')}
         </div>
-      </div>`;
+      </button>`;
   }
 
   function normalizePobGoodEntry(pobGood, baseEntry) {
@@ -2825,6 +3940,7 @@
   } catch (error) {
     console.warn('Unable to restore market cache', error);
   }
+
 
 </script>
 </body>
