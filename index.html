@@ -766,6 +766,287 @@
       background:#111a24 !important;
     }
 
+
+    /* ---- Cohesive color pass: Deep Space Operations ---- */
+    :root {
+      --text:#d9e2ea;
+      --muted:#8998a8;
+      --accent:#63b3d1;
+      --accent-soft:#173443;
+      --heading:#c5b8ee;
+      --value:#e8bd72;
+      --production:#76c69a;
+      --consumption:#e58a82;
+      --location:#7fb7d8;
+    }
+
+    /* Page and section headings: restrained lavender. */
+    h1,
+    .topbar h1 {
+      color:var(--heading) !important;
+    }
+
+    .card h2,
+    .card h3,
+    .card h4 {
+      color:#b9cbe0 !important;
+    }
+
+    /* Station / PoB names stay bright but slightly warm instead of white. */
+    .history-item b,
+    .history-item strong,
+    button.history-item b,
+    button.history-item strong {
+      color:#e4e9df !important;
+    }
+
+    /* Numeric market/GDP values get a warm amber highlight. */
+    #regionalEconomy .history-item > div > div:last-child b,
+    #pobEconomyGDP b,
+    #pobEconomyExports .history-item > div > div:last-child b,
+    #pobEconomyImports .history-item > div > div:last-child b,
+    #pobTradeDetails .history-item > div > div:last-child b {
+      color:var(--value) !important;
+    }
+
+    /* Production side: subtle green identity. */
+    #marketProducers .history-item,
+    #goodsMarketProducers .history-item,
+    #pobEconomyExports .history-item {
+      border-left:3px solid var(--production) !important;
+    }
+
+    /* Consumption side: subtle coral identity. */
+    #marketConsumers .history-item,
+    #goodsMarketConsumers .history-item,
+    #pobEconomyImports .history-item {
+      border-left:3px solid var(--consumption) !important;
+    }
+
+    /* Section titles communicate market direction without overwhelming cards. */
+    #commodityMarket .span-6:nth-of-type(1) h3,
+    #goodsMarket .span-6:nth-of-type(1) h3,
+    #pobEconomyExports ~ h3 {
+      color:var(--production) !important;
+    }
+
+    /* Links/navigation/active controls use cyan. */
+    .nav-btn.active,
+    .btn.primary,
+    button.btn.primary {
+      color:#d9f2fb !important;
+      background:var(--accent-soft) !important;
+      border-color:#39738a !important;
+    }
+
+    .nav-btn:hover {
+      color:#a9dced !important;
+    }
+
+    /* Region toggles: active cyan, inactive steel. */
+    #marketRegionButtons .btn.primary,
+    #marketRegionButtonsGoods .btn.primary,
+    #marketGlobalRegionButton.primary,
+    #marketGlobalRegionButtonGoods.primary {
+      color:#d9f2fb !important;
+      background:#183846 !important;
+      border-color:#477f94 !important;
+    }
+
+    /* Search/field labels use a soft blue instead of white. */
+    label {
+      color:#9dbbd0 !important;
+    }
+
+    /* Location/system metadata gets a faint blue tint. */
+    #pobEconomyLocation,
+    #regionalEconomy .small.muted,
+    #pobTradeDetails .small.muted {
+      color:#829fb4 !important;
+    }
+
+    /* Keep general explanatory text neutral and easy on the eyes. */
+    .notice {
+      color:#b7c5d2 !important;
+    }
+
+
+    /* Compact Global Economy / Regional GDP rows */
+    #regionalEconomyList > .history-item {
+      margin-bottom:7px !important;
+      padding:7px !important;
+    }
+
+    #regionalEconomyList > .history-item > button {
+      padding:6px 9px !important;
+      min-height:0 !important;
+    }
+
+    #regionalEconomyList > .history-item > button b {
+      font-size:13px !important;
+    }
+
+    #regionalEconomyList > .history-item > button .small {
+      font-size:10px !important;
+      margin-top:2px !important;
+    }
+
+    /* Expanded PoB contribution rows */
+    #regionalEconomyList .history-item .history-item {
+      margin-top:4px !important;
+      padding:5px 8px !important;
+      min-height:0 !important;
+    }
+
+    #regionalEconomyList .history-item .history-item b {
+      font-size:12px !important;
+    }
+
+    #regionalEconomyList .history-item .history-item .small {
+      font-size:10px !important;
+      margin-top:2px !important;
+    }
+
+    #regionalEconomyList .history-item > div[style*="border-top"] {
+      margin-top:5px !important;
+      padding-top:5px !important;
+    }
+
+
+    /* Regional GDP: one-line region summary, normal readable type. */
+    #regionalEconomyList > .history-item > button b {
+      font-size:inherit !important;
+    }
+
+    #regionalEconomyList .history-item .history-item b {
+      font-size:inherit !important;
+    }
+
+    #regionalEconomyList .history-item .history-item .small {
+      font-size:inherit !important;
+    }
+
+
+    /* Helpful notes / notices: restore the warm yellow callout treatment. */
+    .notice {
+      background:#2a2415 !important;
+      border:1px solid #6f5b25 !important;
+      border-left:4px solid #d6ad4c !important;
+      color:#ead9a5 !important;
+    }
+
+    .notice b,
+    .notice strong {
+      color:#f2d77f !important;
+    }
+
+    .notice .muted,
+    .notice .small {
+      color:#cbbd91 !important;
+    }
+
+
+    .donation-line {
+      margin-top:6px;
+      font-size:12px;
+      line-height:1.35;
+      color:#d7bd75;
+    }
+
+    .donation-line b {
+      color:#f0d47f;
+      font-weight:700;
+    }
+
+
+    .main-donation-line {
+      display:block;
+      width:max-content;
+      max-width:100%;
+      margin-top:7px;
+      color:#d7bd75;
+      font-size:12px;
+      line-height:1.4;
+      white-space:normal;
+    }
+
+    .main-donation-line b {
+      color:#f0d47f;
+      font-weight:700;
+    }
+
+    @media (min-width:700px) {
+      .main-donation-line {
+        white-space:nowrap;
+      }
+    }
+
+
+    /* ---- Region selector redesign ----
+       Use clean wrapping chips instead of a horizontal scroller. */
+    #marketRegionButtons,
+    #marketRegionButtonsGoods {
+      display:grid !important;
+      grid-template-columns:repeat(auto-fit, minmax(145px, 1fr));
+      gap:8px !important;
+      width:100%;
+      overflow:visible !important;
+      padding:0 !important;
+    }
+
+    #marketRegionButtons .btn,
+    #marketRegionButtonsGoods .btn {
+      width:100%;
+      min-height:38px;
+      padding:8px 12px !important;
+      font-size:13px !important;
+      line-height:1.2;
+      white-space:normal !important;
+      text-align:center;
+      justify-content:center;
+      border-radius:8px;
+    }
+
+    #marketGlobalRegionButton,
+    #marketGlobalRegionButtonGoods {
+      min-height:38px;
+      padding:8px 16px !important;
+      font-size:13px !important;
+      border-radius:8px;
+      flex:0 0 auto;
+    }
+
+    /* Region toolbar itself should stay compact and breathe. */
+    #commodityMarket .grid > .card:first-child > div,
+    #goodsMarket .grid > .card:first-child > div {
+      align-items:flex-start !important;
+      gap:10px !important;
+    }
+
+    #commodityMarket .grid > .card:first-child,
+    #goodsMarket .grid > .card:first-child {
+      padding:10px 12px !important;
+    }
+
+    @media (max-width:900px) {
+      #marketRegionButtons,
+      #marketRegionButtonsGoods {
+        grid-template-columns:repeat(auto-fit, minmax(120px, 1fr));
+      }
+    }
+
+    @media (max-width:520px) {
+      #marketRegionButtons,
+      #marketRegionButtonsGoods {
+        grid-template-columns:repeat(2, minmax(0, 1fr));
+      }
+
+      #marketGlobalRegionButton,
+      #marketGlobalRegionButtonGoods {
+        width:100%;
+      }
+    }
+
 </style>
 </head>
 <body>
@@ -788,6 +1069,7 @@
       <div>
         <h2>DiscoveryGC Market Console</h2>
         <p>Live market analysis powered by Darkstat.</p>
+        <div class="main-donation-line">Enjoying the tool? Friendly donations to <b>donnel_bank</b> are always appreciated ♥</div>
       </div>
       <div class="clock" style="display:flex;flex-direction:column;gap:6px;min-width:245px;">
         <div id="liveClock">Loading local time…</div>
@@ -815,7 +1097,7 @@
           <h3 id="commodityMarketTitle">Global Commodity Market <span id="globalCommodityMarketValue" class="small muted" style="font-weight:500;margin-left:8px;"></span></h3>
           
           <div id="topCommodityMarkets" class="history-list" style="max-height:680px;">
-            <div class="muted">Refresh Market Data to calculate rankings.</div>
+            <div class="muted">Click "Refresh Market Data" to load current market rankings.</div>
           </div>
         </div>
 
@@ -856,7 +1138,7 @@
           </div>
 
           <div id="marketCommodityInfo" class="notice" style="margin-top:16px;">
-            Refresh Commodities under Live API Data first, then choose a commodity here.
+            Click "Refresh Market Data" first, then choose a commodity here.
           </div>
         </div>
 
@@ -895,7 +1177,7 @@
           <h3 id="goodsMarketTitle">Global Goods Market <span id="globalGoodsMarketValue" class="small muted" style="font-weight:500;margin-left:8px;"></span></h3>
           
           <div id="topGoodsMarkets" class="history-list" style="max-height:680px;">
-            <div class="muted">Refresh Market Data to calculate rankings.</div>
+            <div class="muted">Click "Refresh Market Data" to load current market rankings.</div>
           </div>
         </div>
 
@@ -1734,20 +2016,14 @@
         <div class="history-item" style="font-family:inherit;cursor:default;margin-bottom:14px;">
           <button type="button"
                   class="btn secondary"
-                  style="width:100%;display:flex;justify-content:space-between;gap:14px;align-items:flex-start;text-align:left;padding:10px 12px;"
+                  style="width:100%;display:flex;justify-content:space-between;gap:14px;align-items:center;text-align:left;padding:10px 12px;"
                   aria-expanded="false"
                   aria-controls="${detailsId}"
                   onclick="toggleRegionGDPDetails(this, '${detailsId}')">
-            <div>
-              <b>${regionIndex + 1}. ${escapeHtml(row.region)}</b>
-              <div class="small muted" style="margin-top:4px;">
-                ${regionShare.toFixed(2)}% of global GDP • ${row.pobs.length} contributing PoB${row.pobs.length === 1 ? '' : 's'}
-              </div>
-            </div>
-            <div style="text-align:right;white-space:nowrap;">
+            <b>${regionIndex + 1}. ${escapeHtml(row.region)}</b>
+            <div style="display:flex;align-items:center;gap:12px;white-space:nowrap;">
+              <span class="muted">${regionShare.toFixed(2)}%</span>
               <b>$${row.gdp.toLocaleString()}</b>
-              <div class="small muted">${formatCompactMoney(row.gdp)}</div>
-              <div class="small muted" style="margin-top:4px;">Expand ▼</div>
             </div>
           </button>
 
@@ -2333,12 +2609,6 @@
     const opening = details.style.display === 'none';
     details.style.display = opening ? 'block' : 'none';
     button.setAttribute('aria-expanded', opening ? 'true' : 'false');
-
-    const labels = button.querySelectorAll('.small.muted');
-    const toggleLabel = labels[labels.length - 1];
-    if (toggleLabel) {
-      toggleLabel.textContent = opening ? 'Collapse ▲' : 'Expand ▼';
-    }
   }
 
   async function refreshRegionalEconomy() {
@@ -3143,7 +3413,7 @@
     if (!container) return;
 
     if (!Array.isArray(pobGoodsCache) || !pobGoodsCache.length || !commodities.length) {
-      container.innerHTML = '<div class="muted">Refresh Market Data to calculate rankings.</div>';
+      container.innerHTML = '<div class="muted">Click "Refresh Market Data" to load current market rankings.</div>';
       return;
     }
 
@@ -3239,7 +3509,7 @@
     if (!container) return;
 
     if (!Array.isArray(pobGoodsCache) || !pobGoodsCache.length) {
-      container.innerHTML = '<div class="muted">Refresh Market Data to calculate rankings.</div>';
+      container.innerHTML = '<div class="muted">Click "Refresh Market Data" to load current market rankings.</div>';
       return;
     }
 
@@ -3941,6 +4211,26 @@
     console.warn('Unable to restore market cache', error);
   }
 
+
+
+  let initialMarketRefreshStarted = false;
+
+  async function autoRefreshMarketDataOnOpen() {
+    if (initialMarketRefreshStarted) return;
+    initialMarketRefreshStarted = true;
+
+    try {
+      await refreshCommodityMarketData();
+    } catch (error) {
+      console.warn('Initial market refresh failed:', error);
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', autoRefreshMarketDataOnOpen, { once: true });
+  } else {
+    autoRefreshMarketDataOnOpen();
+  }
 
 </script>
 </body>
